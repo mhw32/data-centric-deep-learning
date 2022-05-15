@@ -1,0 +1,20 @@
+{
+  "system": {
+    "data": {
+      "root": "./artifacts/data/mnist"
+    },
+    "model": {
+      "name": "linear"
+    },
+    "optimizer": {
+      "max_epochs": 10,
+      "batch_size": 32,
+      "lr": 4e-3
+    },
+    "save_dir": "./artifacts/ckpts/train_flow"
+  },
+  "wandb": {
+    "project": "train_flow",
+    "entity": "wumike"
+  }
+}
