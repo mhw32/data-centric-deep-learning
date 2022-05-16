@@ -125,7 +125,10 @@ def predict(request: Request, body: InferenceInput):
     # from system to make a prediction? 
     # 
     # Our solution is one of code. 
-    logits = system.predict_step(im)
+    # 
+    # Pseudocode:
+    # --
+    # logits = ... (use system)
     # ================================
 
     # To extract the label, just find the largest logit.
@@ -139,7 +142,10 @@ def predict(request: Request, body: InferenceInput):
     # Normalize `logits` to probabilities and save it to the 
     # variable `probs`. Remember `logits` is shape (1, 10), and 
     # we expect your output `probs` to be shape (1, 10) as well.
-    probs = F.softmax(logits, dim=1)
+    # 
+    # Pseudocode:
+    # --
+    # probs = ...do something to logits...
     # ================================
     probs = probs.squeeze(0)        # squeeze to (10) shape
     probs = probs.numpy().tolist()  # convert tensor to list
