@@ -164,31 +164,7 @@ class TrainIdentifyReview(FlowSpec):
       # Call `predict` on `Trainer` and the test data loader.
       # Convert probabilities back to numpy (make sure 1D).
       # ===============================================
-      X_train, X_test = X[train_index], X[test_index]
-      y_train, y_test = y[train_index], y[test_index]
-
-      X_train = torch.from_numpy(X_train).float()
-      X_test = torch.from_numpy(X_test).float()
-      y_train = torch.from_numpy(y_train).long()
-      y_test = torch.from_numpy(y_test).long()
-
-      ds_train = TensorDataset(X_train, y_train)
-      ds_test = TensorDataset(X_test, y_test)
-
-      dl_train = DataLoader(ds_train, 
-        batch_size = self.config.train.optimizer.batch_size,
-        shuffle = True)
-      dl_test = DataLoader(ds_test, 
-        batch_size = self.config.train.optimizer.batch_size)
-
-      system = SentimentClassifierSystem(self.config)
-      trainer = Trainer( 
-        max_epochs = self.config.train.optimizer.max_epochs)
-      trainer.fit(system, dl_train)
-
-      probs_ = trainer.predict(system, dataloaders = dl_test)
-      probs_ = torch.cat(probs_).squeeze(1).numpy()
-
+      assert probs_ is not None, "`probs_` is not defined."
       probs[test_index] = probs_
 
     # create a single dataframe with all input features
