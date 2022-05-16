@@ -16,6 +16,6 @@
   },
   "wandb": {
     "project": "directionality_flow",
-    "entity": "wumike"
+    "entity": "<USERNAME>"
   }
 }

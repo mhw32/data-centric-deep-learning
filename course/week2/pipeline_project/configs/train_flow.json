@@ -15,6 +15,6 @@
   },
   "wandb": {
     "project": "train_flow",
-    "entity": "wumike"
+    "entity": "<USERNAME>"
   }
 }

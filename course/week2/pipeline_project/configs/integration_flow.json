@@ -15,6 +15,6 @@
   },
   "wandb": {
     "project": "integration_flow",
-    "entity": "wumike"
+    "entity": "<USERNAME>"
   }
 }

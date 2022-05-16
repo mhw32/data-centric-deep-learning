@@ -16,6 +16,6 @@
   },
   "wandb": {
     "project": "regression_flow",
-    "entity": "wumike"
+    "entity": "<USERNAME>"
   }
 }

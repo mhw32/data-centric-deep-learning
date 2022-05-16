@@ -91,10 +91,32 @@ class DigitClassifierFlow(FlowSpec):
     # manually propagate class variables through but we only
     # need a few of them so no need to call `merge_artifacts`
     self.dm = inputs[0].dm
-    scores = [input.callback.best_model_score for input in inputs]
+
+    scores = []        # populate with scores from each hparams
+    best_index = None  # replace with best index
     
-    # find the index of the highest score
-    best_index = np.argmax(scores)
+    # ================================
+    # FILL ME OUT
+    # 
+    # Aggregate the best validation performance across inputs into
+    # the variable `scores`.
+    # 
+    # HINT: the `callback` object has a property `best_model_score`
+    #       that make come in handy. 
+    # 
+    # Then, compute the index of the model and store it in `best_index`.
+    # 
+    # Pseudocode:
+    # --
+    # aggregate scores using `inputs`
+    # best_index = ...
+    # ================================
+
+    # sanity check for scores length
+    assert len(scores) == len(inputs), "Hmm. Incorrect length for scores."
+    # sanity check for best_index
+    assert best_index is not None
+    assert best_index >= 0 and best_index < len(inputs)
     
     # get the best system / trainer
     # we drop the callback
