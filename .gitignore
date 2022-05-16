@@ -128,4 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 **.DS_Store
-
+**.metaflow
+**logs/
+**lightning_logs/
+**ckpts/
