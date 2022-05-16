@@ -53,8 +53,12 @@ class MNISTIntegrationTest(BaseTest):
     #
     # Create a dataloader, and pass it to the trainer and call `test`.
     # Our solution is two lines of code.
-    loader = self.get_dataloader()
-    trainer.test(system, dataloaders = loader)
+    #
+    # Pseudocode
+    # --
+    # loader = ...
+    # pass loader to trainer and call test
+    pass  # remove me
     # ================================
 
 

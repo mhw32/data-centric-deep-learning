@@ -159,7 +159,10 @@ class MNISTDirectionalityTest(BaseTest):
       # You can extract a value from a torch.Tensor with `.item()`.
       # 
       # Our solution is one line of code.
-      batch_metric = torch.mean((preds_raw == preds_transformed).float()).item()
+      # 
+      # Pseudocode
+      # --
+      # batch_metric = ...
       # ================================
       metric.append(batch_metric)
       pbar.update()
