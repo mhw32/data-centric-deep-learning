@@ -73,7 +73,7 @@ def build_regression_test(system, loader):
     #   batch_is_correct = [1, 1, 0, 1, 0, 0, ...]
     # 
     # For the second one, compute the loss between the predicted logit and 
-    # the true label, and store this in `losses`. For isntances:
+    # the true label, and store this in `losses`. For instance:
     # 
     #   batch_loss = [0.012, 0.718, 0.241, ...]
     # 
@@ -87,9 +87,11 @@ def build_regression_test(system, loader):
     # torch tensor to a list, use: `x.numpy().tolist()`. 
     # 
     # Our solution is 2-3 lines of code. 
-    batch_is_correct = (preds == labels).long().numpy().tolist()
-    batch_loss = F.cross_entropy(logits, labels, reduction='none')
-    batch_loss = batch_loss.numpy().tolist()
+    # 
+    # Pseudocode:
+    # -- 
+    # batch_loss = ...
+    # convert batch_loss to list of floats
     # ================================
     losses.extend(batch_loss)
     is_correct.extend(batch_is_correct)
