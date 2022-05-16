@@ -41,8 +41,12 @@ class PredictionTask(Task):
     # 
     # Load the checkpoint in `MODEL_PATH` using the class 
     # `DigitClassifierSystem`. Store in the variable `system`.
-    system = DigitClassifierSystem.load_from_checkpoint(MODEL_PATH)
+    # 
+    # Pseudocode:
+    # --
+    # system = ...
     # ================================
+    assert system is not None, "System is not loaded."
     return system.eval()
 
 
@@ -86,8 +90,12 @@ def predict_single(self, data):
     # FILL ME OUT
     # 
     # Copy over your solution from `week3_fastapi/api.py`.
-    logits = self.system.predict_step(im)
+    # 
+    # Pseudocode:
+    # --
+    # logits = ... (use system)
     # ================================
+    assert logits is not None, "logits is not defined."
 
     # To extract the label, just find the largest logit.
     label = torch.argmax(logits, dim=1)  # shape (1)
@@ -98,8 +106,12 @@ def predict_single(self, data):
     # FILL ME OUT
     # 
     # Copy over your solution from `week3_fastapi/api.py`.
-    probs = F.softmax(logits, dim=1)
+    # 
+    # Pseudocode:
+    # --
+    # probs = ...do something to logits...
     # ================================
+    assert probs is not None, "probs is not defined."
     probs = probs.squeeze(0)        # squeeze to (10) shape
     probs = probs.numpy().tolist()  # convert tensor to list
 
