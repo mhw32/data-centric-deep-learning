@@ -40,16 +40,16 @@ def get_hist_score(tr_probs, te_probs, bins=10):
   # 
   # Pseudocode:
   # --
-  # tr_heights, tr_bins = make histogram using tr_probs
-  #   important for normed = True
-  # te_heights, te_bins = make histogram using te_probs
-  #   important for normed = True
-  # tr_bins and te_bins must be same size
+  # tr_heights, bin_edges = make histogram using tr_probs
+  #   important for `density = True`.
+  # te_heights, _ = make histogram using te_probs with the same 
+  #   bin edges set to `bin_edges`. St `density = True`.
   # 
   # score = 0
   # loop though bins by index i
-  #   tr_area = tr_bins[i] * tr_heights[i]
-  #   te_area = te_bins[i] * te_heights[i]
+  #   bin_mid = compute middle of bin from two edges
+  #   tr_area = bin_mid * tr_heights[i]
+  #   te_area = bin_mid * te_heights[i]
   #   intersect = min(tr_area, te_area)
   #   score = score + intersect
   # 
@@ -65,15 +65,19 @@ def get_hist_score(tr_probs, te_probs, bins=10):
   # --
   # Remember to normalize the histogram so heights
   # sum to one. See `np.histogram`. Also remember to 
-  # use the same bins for `tr_probs` and `te_probs`.
+  # use the same bins for `tr_probs` and `te_probs`. 
+  # 
+  # Read the documentation for `np.histogram` carefully, in
+  # particular what `bin_edges` represent.
   score = 0
   tr_heights, tr_bins = np.histogram(
-    tr_probs.cpu().numpy(), bins=bins, normed=True)
+    tr_probs.cpu().numpy(), density=True)
   te_heights, _ = np.histogram(
-    te_probs.cpu().numpy(), bins=tr_bins, normed=True)
-  for i in range(len(tr_bins)):
-    tr_area = tr_bins[i] * tr_heights[i]
-    te_area = tr_bins[i] * te_heights[i]
+    te_probs.cpu().numpy(), bins=tr_bins, density=True)
+  for i in range(len(tr_heights)):
+    bin_mid = (tr_bins[i] + tr_bins[i+1]) / 2.
+    tr_area = bin_mid * tr_heights[i]
+    te_area = bin_mid * te_heights[i]
     intersect = min(tr_area, te_area)
     score += intersect
   # ============================
@@ -117,36 +121,46 @@ def get_vocab_outlier(tr_vocab, te_vocab):
 
 class MonitoringSystem:
 
-  def __init__(self, tr_vocab, tr_probs):
+  def __init__(self, tr_vocab, tr_probs, tr_labels):
     self.tr_vocab = tr_vocab
     self.tr_probs = tr_probs
+    self.tr_labels = tr_labels
 
-  def calibrate(self, probs, labels):
-    cal_probs = None
+  def calibrate(self, tr_probs, tr_labels, te_probs):
+    tr_probs_cal = None
+    te_probs_cal = None
     # ============================
     # FILL ME OUT
     # 
-    # Calibrate probabilities with isotonic regression.
+    # Calibrate probabilities with isotonic regression using 
+    # the training probabilities and labels. 
     # 
     # Pseudocode:
     # --
     # use IsotonicRegression()
-    # cal_probs = ...
+    # tr_probs_cal = fit calibration model
+    # te_probs_cal = evaluate using fitted model
     # 
     # Type:
     # --
-    # `cal_probs`: torch.Tensor. Note that sklearn
+    # `tr_probs_cal`: torch.Tensor. Note that sklearn
     # returns a NumPy array. You will need to cast 
     # it to a torch.Tensor.
+    # 
+    # `te_probs_cal`: torch.Tensor
     cal_model = IsotonicRegression()
-    cal_probs = cal_model.fit_transform(probs.cpu().numpy(), labels.cpu().numpy())
-    cal_probs = torch.from_numpy(cal_probs).float()
+    tr_probs_cal = cal_model.fit_transform(
+      tr_probs.cpu().numpy(), tr_labels.cpu().numpy())
+    te_probs_cal = cal_model.transform(te_probs.cpu().numpy())
+    tr_probs_cal = torch.from_numpy(tr_probs_cal).float()
+    te_probs_cal = torch.from_numpy(te_probs_cal).float()
     # ============================
-    return cal_probs
+    return tr_probs_cal, te_probs_cal
 
   def monitor(self, te_vocab, te_probs):
-    tr_probs = self.calibrate(self.tr_probs)
-    te_probs = self.calibrate(te_probs)
+    # tr_probs, te_probs = self.calibrate(self.tr_probs, self.tr_labels, te_probs)
+    tr_probs = self.tr_probs
+    # tr_labels = self.tr_labels
     # ============================
     # FILL ME OUT
     # 

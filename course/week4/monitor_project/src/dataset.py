@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 import pandas as pd
 from os.path import join
 from torch.utils.data import Dataset
@@ -51,6 +52,12 @@ class ProductReviewEmbeddings(Dataset):
         vocab[token.lower()] += 1
     # ===============================
     return dict(vocab)
+
+  def get_labels(self):
+    # return labels as a torch.LongTensor
+    label = np.asarray(self.data.label)
+    label = torch.from_numpy(label).long()
+    return label
 
   def __getitem__(self, index):
     label = self.data.iloc[index].label
