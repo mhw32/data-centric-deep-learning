@@ -1,3 +1,4 @@
+from pprint import pprint
 from torch.utils.data import DataLoader
 from pytorch_lightning import Trainer
 from src.monitor import MonitoringSystem
@@ -28,7 +29,6 @@ def main(args):
   # monitor: MonitoringSystem
   monitor = MonitoringSystem(tr_vocab, tr_probs)
   # ============================
-  results = []
 
   for index in range(1, 9):
     te_ds = ProductReviewStream(index)
@@ -36,7 +36,7 @@ def main(args):
     te_vocab = te_ds.get_vocab()
     te_probs = get_probs(system, te_dl)
 
-    cur_results = None
+    results = None
     # ============================
     # FILL ME OUT
     # 
@@ -49,17 +49,27 @@ def main(args):
     # 
     # Type:
     # --
-    # cur_results: Dict[str, Any] - results from monitoring
-    cur_results = monitor.monitor(te_vocab, te_probs)
+    # results: Dict[str, Any] - results from monitoring
+    #   Expected keys:
+    #     - ks_score: p-value from two-sample KS test
+    #     - hist_score: intersection score between histograms
+    #     - outlier_score: perc of vocabulary that is new
+    results = monitor.monitor(te_vocab, te_probs)
     # ============================
-    results.append(cur_results)
 
-  return results
+    if results is not None:
+      print('==========================')
+      print(f'STREAM ({index} out of 8)')
+      print('==========================')
+      print(f'KS test p-value: {results["ks_score"]:.3f}')
+      print(f'Histogram intersection: {results["hist_score"]:.3f}')
+      print(f'OOD Vocab %: {results["outlier_score"]*100:.2f}')
+      print('')  # new line
 
 
 def get_probs(system, loader):
   trainer = Trainer()
-  probs = trainer.predict(dataloaders=loader)
+  probs = trainer.predict(system, dataloaders=loader)
   return probs
 
 
