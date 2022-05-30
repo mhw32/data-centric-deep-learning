@@ -25,10 +25,10 @@ class TrainClassifier(FlowSpec):
 
   Arguments
   ---------
-  config (str, default: ./configs/train_en.json): path to a configuration file
+  config (str, default: ./configs/train.json): path to a configuration file
   """
   config_path = Parameter('config', 
-    help = 'path to config file', default = join(CONFIG_DIR, 'train_en.json'))
+    help = 'path to config file', default = join(CONFIG_DIR, 'train.json'))
 
   @step
   def start(self):

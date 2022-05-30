@@ -1,6 +1,5 @@
-from pprint import pprint
-from torch.utils.data import DataLoader
 from pytorch_lightning import Trainer
+from torch.utils.data import DataLoader
 from src.monitor import MonitoringSystem
 from src.dataset import ProductReviewStream, ProductReviewEmbeddings
 from src.systems import SentimentClassifierSystem

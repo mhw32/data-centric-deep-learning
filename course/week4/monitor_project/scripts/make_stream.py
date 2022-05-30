@@ -12,7 +12,7 @@ def main():
   out_dir = join(DATA_DIR, 'stream')
 
   en_csv, en_emb = load_dev_and_test(en_dir)
-  es_csv, es_emb = load_dev_and_test(es_dir)
+  es_csv, es_emb = load_train(es_dir, max_size=len(en_csv))
   portions = [0, 0, 0.2, 0.4, 0.6, 0.8, 0.8, 0.8]
 
   for i in range(8):
@@ -53,6 +53,16 @@ def load_dev_and_test(dir):
   csv = pd.concat([dev_csv, test_csv])
   emb = torch.cat([dev_emb, test_emb], dim=0)
   csv = csv.reset_index(drop=True)
+
+  return csv, emb
+
+
+def load_train(dir, max_size):
+  train_emb = torch.load(join(dir, 'train.pt'))
+  train_csv = pd.read_csv(join(dir, 'train.csv'))
+
+  csv = train_csv.loc[:max_size]
+  emb = train_emb[:max_size]
 
   return csv, emb
 
