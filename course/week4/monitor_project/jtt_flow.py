@@ -138,6 +138,8 @@ class JustTrainTwice(FlowSpec):
     trainer.test(system, dataloaders = es_dl)
     es_results = system.test_results
 
+    print()
+
     acc_diff = None
     # =============================
     # FILL ME OUT
@@ -157,6 +159,13 @@ class JustTrainTwice(FlowSpec):
     acc_diff = abs(en_acc - es_acc)
     # =============================
 
+    print(f'[lambd={lambd}] Results on English reviews:')
+    pprint(en_results)
+
+    print(f'[lambd={lambd}] Results on Spanish reviews:')
+    pprint(es_results)
+
+    self.lambd = lambd
     self.acc_diff = acc_diff
     self.en_results = en_results
     self.es_results = es_results
@@ -184,11 +193,12 @@ class JustTrainTwice(FlowSpec):
 
     en_results = inputs[index].en_results
     es_results = inputs[index].es_results
+    best_lambd = inputs[index].lambd
 
-    print('Results on English reviews:')
+    print(f'[best lambd={best_lambd}] Results on English reviews:')
     pprint(en_results)
 
-    print('Results on Spanish reviews:')
+    print(f'[best lambd={best_lambd}] Results on Spanish reviews:')
     pprint(es_results)
 
     log_file = join(LOG_DIR, 'jtt_flow', 'en_results.json')

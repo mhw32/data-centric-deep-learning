@@ -16,8 +16,8 @@ def main():
     es_csv, es_emb = load_split(es_dir, split=split, rs=rs)
 
     size = len(en_emb)
-    es_size = int(0.8 * size)
-    en_size = size - es_size
+    en_size = int(0.8 * size)
+    es_size = size - en_size
 
     csv = pd.concat([es_csv.iloc[:es_size], en_csv.iloc[:en_size]])
     emb = torch.cat([es_emb[:es_size], en_emb[:en_size]])
