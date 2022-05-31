@@ -14,14 +14,15 @@ from src.dataset import ProductReviewEmbeddings
 class ReviewDataModule(pl.LightningDataModule):
   r"""Data module wrapper around review datasets."""
 
-  def __init__(self, config):
+  def __init__(self, config, weights = None):
     super().__init__()
 
     # This should remind you a lot of the MNISTDataModule
     # but instead we load our custom dataset here.
     train_dataset = ProductReviewEmbeddings(
       lang=config.system.data.lang,
-      split='train')
+      split='train',
+      weights = weights)
     dev_dataset = ProductReviewEmbeddings(
       lang=config.system.data.lang,
       split='dev')

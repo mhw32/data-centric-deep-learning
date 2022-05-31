@@ -18,10 +18,14 @@ class ProductReviewEmbeddings(Dataset):
   split (str): the dataset portion
     Options - train | dev | test | * 
   """
-  def __init__(self, lang='en', split='train'):
+  def __init__(self, lang = 'en', split = 'train', weights = None):
     super().__init__()
     self.data = pd.read_csv(join(DATA_DIR, lang, f'{split}.csv'))
     self.embedding = torch.load(join(DATA_DIR, lang, f'{split}.pt'))
+    if weights is None:
+      weights = torch.ones(self.embedding.size(0))
+    assert len(weights) == len(self.embedding)
+    self.weights = weights
     self.split = split
     self.lang = lang
 
@@ -64,6 +68,7 @@ class ProductReviewEmbeddings(Dataset):
     output = {
       'embedding': self.embedding[index].float(),
       'label': int(label),
+      'weight': self.weights[index].item(),
     }
     return output
 

@@ -116,4 +116,3 @@ if __name__ == "__main__":
   You can specify a run id as well.
   """
   flow = EvalClassifier()
-
