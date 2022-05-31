@@ -64,13 +64,37 @@ class JustTrainTwice(FlowSpec):
     dl = DataLoader(ds, batch_size=self.config.system.optimizer.batch_size, 
       num_worker=self.config.system.optimizer.num_worker)
 
+    weights = None
+    # =============================
+    # FILL ME OUT
+    # 
+    # Find out which examples in the training dataset the trained model gets 
+    # incorrect. We expect the variable `weights` to be a `torch.FloatTensor`
+    # of the same size as `len(ds)`. The entries in `weights` are either 0 or 
+    # 1 where the entry is 1 if the model is incorrect. 
+    # 
+    # Pseudocode:
+    # --
+    # Get predicted probabilities with `self.trainer` on the DataLoader `dl`.
+    # Round probabilities to predictions, and compare to labels. 
+    # Element-wise comparison from predictions to labels to see if 
+    #   each element matches. 
+    # Store the result into `weights`.
+    # 
+    # Type:
+    # --
+    # weights: torch.FloatTensor (length: |ds|)
     probs = self.trainer.predict(self.system, dataloaders = dl)
     probs = torch.cat(probs).squeeze(dim=1)
     preds = torch.round(probs).astype(int).cpu().numpy()
     labels = np.asarray(ds.data.label)
     is_wrong = (preds != labels).astype(float)
+    weights = torch.FloatTensor(is_wrong)
+    # =============================
 
-    self.weights = torch.FloatTensor(is_wrong)
+    self.weights = weights
+    
+    # search through all of these lambda for upweighting 
     self.lambd = [5, 10, 20 ,30, 40, 50, 100]
     self.next(self.retrain, foreach='lambd')
 
@@ -100,7 +124,6 @@ class JustTrainTwice(FlowSpec):
     # train model
     trainer.fit(system, dm)
 
-    # test model on the two groups
     en_ds = ProductReviewEmbeddings(lang='en', split='test')
     es_ds = ProductReviewEmbeddings(lang='es', split='test')
     en_dl = DataLoader(en_ds, 
@@ -116,18 +139,47 @@ class JustTrainTwice(FlowSpec):
     trainer.test(system, dataloaders = es_dl)
     es_results = system.test_results
 
+    acc_diff = None
+    # =============================
+    # FILL ME OUT
+    # 
+    # Compute the difference in accuracy between two groups: 
+    # english and spanish reviews. 
+    # 
+    # Pseudocode:
+    # --
+    # acc_diff = |english accuracy - spanish accuracy|
+    # 
+    # Type:
+    # --
+    # acc_diff: float (> 0 and < 1)
     en_acc = en_results['acc']
     es_acc = es_results['acc']
-
     acc_diff = abs(en_acc - es_acc)
+    # =============================
+
     self.acc_diff = acc_diff
     self.en_results = en_results
     self.es_results = es_results
 
   @step
   def join(self, inputs):
+    index = None
+    # =============================
+    # FILL ME OUT
+    # 
+    # Calculate the index with the lowest difference in accuracy. 
+    # 
+    # Pseudocode:
+    # --
+    # Loop through inputs. Each input has a `acc_diff` param.
+    # 
+    # Type:
+    # --
+    # index: integer
     results = [input.acc_diff for input in inputs]
     index = np.argmin(results)
+    # =============================
 
     en_results = inputs[index].en_results
     es_results = inputs[index].es_results
