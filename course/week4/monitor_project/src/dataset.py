@@ -14,7 +14,7 @@ class ProductReviewEmbeddings(Dataset):
   Argument
   --------
   lang (str): the language
-    Options - en | es | de
+    Options - en | es | mix
   split (str): the dataset portion
     Options - train | dev | test | * 
   """

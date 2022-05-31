@@ -137,7 +137,8 @@ class MonitoringSystem:
     # 
     # Pseudocode:
     # --
-    # use IsotonicRegression()
+    # use IsotonicRegression(out_of_bounds='clip')
+    #   See documentation for `out_of_bounds` description.
     # tr_probs_cal = fit calibration model
     # te_probs_cal = evaluate using fitted model
     # 
