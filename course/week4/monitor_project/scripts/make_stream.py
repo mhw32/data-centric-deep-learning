@@ -11,8 +11,8 @@ def main():
   es_dir = join(DATA_DIR, 'es')
   out_dir = join(DATA_DIR, 'stream')
 
-  en_csv, en_emb = load_dev_and_test(en_dir)
-  es_csv, es_emb = load_train(es_dir, max_size=len(en_csv))
+  en_csv, en_emb = load_dev_and_test(en_dir, rs=rs)
+  es_csv, es_emb = load_train(es_dir, max_size=len(en_csv), rs=rs)
   portions = [0, 0, 0.2, 0.4, 0.6, 0.8, 0.8, 0.8]
 
   for i in range(8):
@@ -44,7 +44,10 @@ def main():
     torch.save(emb_i, join(out_dir, f'stream{i+1}.pt'))
 
 
-def load_dev_and_test(dir):
+def load_dev_and_test(dir, rs=None):
+  if rs is None:
+    rs = np.random.RandomState(42)
+
   dev_csv = pd.read_csv(join(dir, 'dev.csv'))
   test_csv = pd.read_csv(join(dir, 'test.csv'))
   dev_emb = torch.load(join(dir, 'dev.pt'))
@@ -54,12 +57,28 @@ def load_dev_and_test(dir):
   emb = torch.cat([dev_emb, test_emb], dim=0)
   csv = csv.reset_index(drop=True)
 
+  indices = np.arange(len(csv))
+  rs.shuffle(indices)
+
+  csv = csv.loc[indices]
+  emb = emb[indices]
+
+  csv = csv.reset_index(drop=True)
   return csv, emb
 
 
-def load_train(dir, max_size):
+def load_train(dir, max_size, rs=None):
+  if rs is None:
+    rs = np.random.RandomState(42)
+
   train_emb = torch.load(join(dir, 'train.pt'))
   train_csv = pd.read_csv(join(dir, 'train.csv'))
+
+  indices = np.arange(len(train_csv))
+  rs.shuffle(indices)
+
+  train_csv = train_csv.loc[indices]
+  train_emb = train_emb[indices]
 
   csv = train_csv.loc[:max_size]
   emb = train_emb[:max_size]

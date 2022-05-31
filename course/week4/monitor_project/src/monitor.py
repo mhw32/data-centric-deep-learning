@@ -47,9 +47,9 @@ def get_hist_score(tr_probs, te_probs, bins=10):
   # 
   # score = 0
   # loop though bins by index i
-  #   bin_mid = compute middle of bin from two edges
-  #   tr_area = bin_mid * tr_heights[i]
-  #   te_area = bin_mid * te_heights[i]
+  #   bin_diff = bin_end - bin_start
+  #   tr_area = bin_diff * tr_heights[i]
+  #   te_area = bin_diff * te_heights[i]
   #   intersect = min(tr_area, te_area)
   #   score = score + intersect
   # 
@@ -71,13 +71,13 @@ def get_hist_score(tr_probs, te_probs, bins=10):
   # particular what `bin_edges` represent.
   score = 0
   tr_heights, tr_bins = np.histogram(
-    tr_probs.cpu().numpy(), density=True)
+    tr_probs.cpu().numpy(), bins=100, density=True)
   te_heights, _ = np.histogram(
     te_probs.cpu().numpy(), bins=tr_bins, density=True)
   for i in range(len(tr_heights)):
-    bin_mid = (tr_bins[i] + tr_bins[i+1]) / 2.
-    tr_area = bin_mid * tr_heights[i]
-    te_area = bin_mid * te_heights[i]
+    bin_diff = tr_bins[i+1] - tr_bins[i]
+    tr_area = bin_diff * tr_heights[i]
+    te_area = bin_diff * te_heights[i]
     intersect = min(tr_area, te_area)
     score += intersect
   # ============================
@@ -148,7 +148,7 @@ class MonitoringSystem:
     # it to a torch.Tensor.
     # 
     # `te_probs_cal`: torch.Tensor
-    cal_model = IsotonicRegression()
+    cal_model = IsotonicRegression(out_of_bounds='clip')
     tr_probs_cal = cal_model.fit_transform(
       tr_probs.cpu().numpy(), tr_labels.cpu().numpy())
     te_probs_cal = cal_model.transform(te_probs.cpu().numpy())
@@ -158,9 +158,7 @@ class MonitoringSystem:
     return tr_probs_cal, te_probs_cal
 
   def monitor(self, te_vocab, te_probs):
-    # tr_probs, te_probs = self.calibrate(self.tr_probs, self.tr_labels, te_probs)
-    tr_probs = self.tr_probs
-    # tr_labels = self.tr_labels
+    tr_probs, te_probs = self.calibrate(self.tr_probs, self.tr_labels, te_probs)
     # ============================
     # FILL ME OUT
     # 
