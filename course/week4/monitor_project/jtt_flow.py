@@ -62,7 +62,7 @@ class JustTrainTwice(FlowSpec):
 
     ds = ProductReviewEmbeddings(lang='mix', split='train')
     dl = DataLoader(ds, batch_size=self.config.system.optimizer.batch_size, 
-      num_worker=self.config.system.optimizer.num_worker)
+      num_workers=self.config.system.optimizer.num_workers)
 
     weights = None
     # =============================
@@ -86,12 +86,11 @@ class JustTrainTwice(FlowSpec):
     # weights: torch.FloatTensor (length: |ds|)
     probs = self.trainer.predict(self.system, dataloaders = dl)
     probs = torch.cat(probs).squeeze(dim=1)
-    preds = torch.round(probs).astype(int).cpu().numpy()
+    preds = torch.round(probs).long().cpu().numpy()
     labels = np.asarray(ds.data.label)
     is_wrong = (preds != labels).astype(float)
     weights = torch.FloatTensor(is_wrong)
     # =============================
-
     self.weights = weights
     
     # search through all of these lambda for upweighting 
@@ -161,6 +160,8 @@ class JustTrainTwice(FlowSpec):
     self.acc_diff = acc_diff
     self.en_results = en_results
     self.es_results = es_results
+
+    self.next(self.join)
 
   @step
   def join(self, inputs):
