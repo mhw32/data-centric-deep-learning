@@ -1,0 +1,17 @@
+{
+  "system": {
+    "data": {
+      "lang": "mix"
+    },
+    "model": {
+      "width": 64
+    },
+    "optimizer": {
+      "max_epochs": 10,
+      "batch_size": 128,
+      "lr": 3e-4,
+      "num_workers": 4
+    },
+    "save_dir": "./artifacts/ckpts/update"
+  }
+}

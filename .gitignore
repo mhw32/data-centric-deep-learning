@@ -132,3 +132,5 @@ dmypy.json
 **logs/
 **lightning_logs/
 **ckpts/
+**artifacts/
+**.pt
