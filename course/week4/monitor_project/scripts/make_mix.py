@@ -18,7 +18,7 @@ def main():
     size = len(en_emb)
     en_size = int(0.90 * size)
     es_size = size - en_size
-    group = np.concatenate([np.zeros(en_size), np.ones(es_size)])
+    group = np.concatenate([np.ones(es_size), np.zeros(en_size)])
 
     csv = pd.concat([es_csv.iloc[:es_size], en_csv.iloc[:en_size]])
     emb = torch.cat([es_emb[:es_size], en_emb[:en_size]])

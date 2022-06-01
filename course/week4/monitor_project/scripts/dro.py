@@ -11,6 +11,7 @@ from src.paths import CONFIG_DIR
 def main():
   config = load_config(join(CONFIG_DIR, f'dro.json'))
   dm = ReviewDataModule(config)
+  breakpoint()
   system = RobustSentimentSystem(config)
 
   checkpoint_callback = ModelCheckpoint(
