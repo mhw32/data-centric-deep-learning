@@ -1,8 +1,5 @@
 {
   "system": {
-    "pretrain": {
-      "ckpt_path": "./artifacts/ckpts/update/epoch=9-step=12500.ckpt"
-    },
     "data": {
       "lang": "mix"
     },
