@@ -26,7 +26,6 @@ def main(args):
   # initialize the `MonitoringSystem` using the vocabulary
   # and predicted probabilities.
   monitor = MonitoringSystem(tr_vocab, tr_probs, tr_labels)
-  # ============================
 
   for index in range(1, 9):
     te_ds = ProductReviewStream(index)
