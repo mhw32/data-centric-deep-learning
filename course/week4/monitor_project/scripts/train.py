@@ -2,10 +2,11 @@ from os.path import join
 from pprint import pprint
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.loggers import TensorBoardLogger
 
 from src.systems import SentimentClassifierSystem, ReviewDataModule
 from src.utils import load_config
-from src.paths import CONFIG_DIR
+from src.paths import CONFIG_DIR, LOG_DIR
 
 
 def main(args):
@@ -22,6 +23,7 @@ def main(args):
   )
 
   trainer = Trainer(
+    logger = TensorBoardLogger(save_dir = LOG_DIR),
     max_epochs = config.system.optimizer.max_epochs,
     callbacks = [checkpoint_callback])
 

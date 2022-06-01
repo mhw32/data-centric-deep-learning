@@ -1,9 +1,11 @@
 from pprint import pprint
 from torch.utils.data import DataLoader
 from pytorch_lightning import Trainer
+from pytorch_lightning.loggers import TensorBoardLogger
 
 from src.dataset import ProductReviewEmbeddings
 from src.systems import SentimentClassifierSystem
+from src.paths import LOG_DIR
 
 
 def main(args):
@@ -11,7 +13,7 @@ def main(args):
   dl = DataLoader(ds, batch_size=128, shuffle=False, num_workers=4)
 
   system = SentimentClassifierSystem.load_from_checkpoint(args.ckpt)
-  trainer = Trainer()
+  trainer = Trainer(logger = TensorBoardLogger(save_dir = LOG_DIR))
   trainer.test(system, dataloaders=dl)
 
   results = system.test_results
