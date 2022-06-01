@@ -3,21 +3,19 @@ from pprint import pprint
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 
-from src.systems import SentimentClassifierSystem, ReviewDataModule
+from src.systems import RobustSentimentSystem, ReviewDataModule
 from src.utils import load_config
 from src.paths import CONFIG_DIR
 
 
-def main(args):
-  config = load_config(join(CONFIG_DIR, f'train.json'))
+def main():
+  config = load_config(join(CONFIG_DIR, f'dro.json'))
   dm = ReviewDataModule(config)
-  system = SentimentClassifierSystem(config)
+  system = RobustSentimentSystem(config)
 
   checkpoint_callback = ModelCheckpoint(
     dirpath = config.system.save_dir,
-    monitor = 'dev_loss',
-    mode = 'min',
-    save_top_k = 1,
+    save_last = True,
     verbose = True,
   )
 
@@ -33,8 +31,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-  import argparse
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--lang', type=str, default='en', choices=['en', 'es', 'de'])
-  args = parser.parse_args()
-  main(args)
+  main()

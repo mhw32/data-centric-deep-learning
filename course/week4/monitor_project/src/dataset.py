@@ -64,10 +64,13 @@ class ProductReviewEmbeddings(Dataset):
     return label
 
   def __getitem__(self, index):
-    label = self.data.iloc[index].label
+    row = self.data.iloc[index]
     output = {
       'embedding': self.embedding[index].float(),
-      'label': int(label),
+      'label': int(row.label),
+      # useful for DRO
+      'group': int(row.group if 'group' in row else -1),
+      # useful for JTT
       'weight': self.weights[index].item(),
     }
     return output

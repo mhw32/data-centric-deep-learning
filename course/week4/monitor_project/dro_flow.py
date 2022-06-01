@@ -1,9 +1,10 @@
-"""Flow implementing "Just Train Twice: Improving Group Robustness without 
-Training Group Information". See https://arxiv.org/pdf/2107.09044.pdf.
+"""Flow implementing "Distributionally Robust Neural Network For Group 
+Shifts: On the Importance of Regularization for Worst-Case Generalization". 
+See https://arxiv.org/pdf/1911.08731.pdf.
 """
 import os
 import torch
-import random
+import random 
 import numpy as np
 from pprint import pprint
 from os.path import join
@@ -20,16 +21,16 @@ from src.paths import LOG_DIR, CONFIG_DIR
 from src.utils import load_config, to_json
 
 
-class JustTrainTwice(FlowSpec):
-  r"""A flow that implements Algorithm 1 on page 5 of the paper. 
+class DistRobustOpt(FlowSpec):
+  r"""A flow that implements Equation 4 on page 3 of the paper. 
 
-  We build a dataset E of training examples misclassified by the 
-  trained model. Then, we retrain the model from scratch and upweight
-  the samples in E. We choose between multiple upweight parameters 
-  to see which one results in the best performance.
+  We assume access to group labels, meaning whether an example is in 
+  English or Spanish (this should be quite easy to obtain). We do not 
+  assume access to this in test sets. Then, we minimize the maximum 
+  group loss over all group.
   """
   config_path = Parameter('config', 
-    help = 'path to config file', default = join(CONFIG_DIR, 'jtt.json'))
+    help = 'path to config file', default = join(CONFIG_DIR, 'dro.json'))
   
   @step
   def start(self):
@@ -43,18 +44,11 @@ class JustTrainTwice(FlowSpec):
     self.next(self.load_system)
 
   @step
-  def load_system(self):
-    r"""Load pretrain system on new training data."""
+  def init_system(self):
+    r"""Instantiates a data module, pytorch lightning module, 
+    and lightning trainer instance.
+    """
     config = load_config(self.config_path)
-    system = SentimentClassifierSystem.load_from_checkpoint(
-      config.system.pretrain.ckpt_path)
-    trainer = Trainer(logger = TensorBoardLogger(save_dir=LOG_DIR))
-
-    self.config = config
-    self.system = system
-    self.trainer = trainer
-  
-    self.next(self.build_weights)
 
   @step
   def build_weights(self):
@@ -233,5 +227,5 @@ if __name__ == "__main__":
   
   You can specify a run id as well.
   """
-  flow = JustTrainTwice()
+  flow = DistRobustOpt()
 
