@@ -23,20 +23,8 @@ def main(args):
   # our stream datasets. We randomly pick 1,000.
   tr_probs, tr_labels = create_sample(tr_probs, tr_labels, 1000, rs)
 
-  monitor = None
-  # ============================
-  # FILL ME OUT
-  # 
-  # Initialize the `MonitoringSystem` using the vocabulary
+  # initialize the `MonitoringSystem` using the vocabulary
   # and predicted probabilities.
-  # 
-  # Pseudocode:
-  # --
-  # monitor = MonitoringSystem(...)
-  #
-  # Type:
-  # --
-  # monitor: MonitoringSystem
   monitor = MonitoringSystem(tr_vocab, tr_probs, tr_labels)
   # ============================
 
@@ -47,25 +35,16 @@ def main(args):
     te_probs = get_probs(system, te_dl)
 
     results = None
-    # ============================
-    # FILL ME OUT
+
+    # Compute monitored results.
     # 
-    # Pass `te_vocab` and `te_probs` to the monitor to 
-    # compute monitored results.
-    # 
-    # Pseudocode:
-    # --
-    # Call `monitor.monitor` to compute results.
-    # 
-    # Type:
-    # --
     # results: Dict[str, Any] - results from monitoring
-    #   Expected keys:
-    #     - ks_score: p-value from two-sample KS test
-    #     - hist_score: intersection score between histograms
-    #     - outlier_score: perc of vocabulary that is new
+    #   keys:
+    #   --
+    #   ks_score: p-value from two-sample KS test
+    #   hist_score: intersection score between histograms
+    #   outlier_score: perc of vocabulary that is new
     results = monitor.monitor(te_vocab, te_probs)
-    # ============================
 
     if results is not None:
       print('\n==========================')

@@ -84,12 +84,6 @@ class JustTrainTwice(FlowSpec):
     # Type:
     # --
     # weights: torch.FloatTensor (length: |ds|)
-    probs = self.trainer.predict(self.system, dataloaders = dl)
-    probs = torch.cat(probs).squeeze(dim=1)
-    preds = torch.round(probs).long().cpu().numpy()
-    labels = np.asarray(ds.data.label)
-    is_wrong = (preds != labels).astype(float)
-    weights = torch.FloatTensor(is_wrong)
     # =============================
     self.weights = weights
     
@@ -152,9 +146,6 @@ class JustTrainTwice(FlowSpec):
     # Type:
     # --
     # acc_diff: float (> 0 and < 1)
-    en_acc = en_results['acc']
-    es_acc = es_results['acc']
-    acc_diff = abs(en_acc - es_acc)
     # =============================
 
     print(f'[lambd={lambd}] Results on English reviews:')
@@ -185,8 +176,10 @@ class JustTrainTwice(FlowSpec):
     # Type:
     # --
     # index: integer
-    results = [input.acc_diff for input in inputs]
-    index = np.argmin(results)
+    # 
+    # Notes:
+    # -- 
+    # Our solution is 2 lines of code.
     # =============================
 
     en_results = inputs[index].en_results

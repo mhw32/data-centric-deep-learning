@@ -8,15 +8,13 @@ import random
 import numpy as np
 from pprint import pprint
 from os.path import join
-from torch.utils.data import DataLoader
 from metaflow import FlowSpec, step, Parameter
 
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 
-from src.systems import ReviewDataModule, SentimentClassifierSystem
-from src.dataset import ProductReviewEmbeddings
+from src.systems import ReviewDataModule, RobustSentimentSystem
 from src.paths import LOG_DIR, CONFIG_DIR
 from src.utils import load_config, to_json
 
@@ -49,157 +47,51 @@ class DistRobustOpt(FlowSpec):
     and lightning trainer instance.
     """
     config = load_config(self.config_path)
+    dm = ReviewDataModule(config)
 
-  @step
-  def build_weights(self):
-    r"""Build map from example to weight."""
-
-    ds = ProductReviewEmbeddings(lang='mix', split='train')
-    dl = DataLoader(ds, batch_size=self.config.system.optimizer.batch_size, 
-      num_workers=self.config.system.optimizer.num_workers)
-
-    weights = None
-    # =============================
-    # FILL ME OUT
-    # 
-    # Find out which examples in the training dataset the trained model gets 
-    # incorrect. We expect the variable `weights` to be a `torch.FloatTensor`
-    # of the same size as `len(ds)`. The entries in `weights` are either 0 or 
-    # 1 where the entry is 1 if the model is incorrect. 
-    # 
-    # Pseudocode:
-    # --
-    # Get predicted probabilities with `self.trainer` on the DataLoader `dl`.
-    # Round probabilities to predictions, and compare to labels. 
-    # Element-wise comparison from predictions to labels to see if 
-    #   each element matches. 
-    # Store the result into `weights`.
-    # 
-    # Type:
-    # --
-    # weights: torch.FloatTensor (length: |ds|)
-    probs = self.trainer.predict(self.system, dataloaders = dl)
-    probs = torch.cat(probs).squeeze(dim=1)
-    preds = torch.round(probs).long().cpu().numpy()
-    labels = np.asarray(ds.data.label)
-    is_wrong = (preds != labels).astype(float)
-    weights = torch.FloatTensor(is_wrong)
-    # =============================
-    self.weights = weights
-    
-    # search through all of these lambda for upweighting 
-    self.lambd = [5, 10, 20 ,30, 40, 50, 100]
-    self.next(self.retrain, foreach='lambd')
-
-  @step
-  def retrain(self):
-    lambd = self.input
-    config = self.config
-
-    # add weights to training set
-    dm = ReviewDataModule(config, weights = self.weights)
-    system = SentimentClassifierSystem(config)
+    # your implementation will be used here!
+    system = RobustSentimentSystem(config)
 
     checkpoint_callback = ModelCheckpoint(
-      # save to its own folder
-      dirpath = join(config.system.save_dir, f'lambd_{lambd}'),
-      monitor = 'dev_loss',
-      mode = 'min',
-      save_top_k = 1,
+      dirpath = config.system.save_dir,
+      save_last = True,  # save the last epoch!
       verbose = True,
     )
 
     trainer = Trainer(
-      logger = TensorBoardLogger(save_dir = LOG_DIR),
+      logger = TensorBoardLogger(save_dir=LOG_DIR),
       max_epochs = config.system.optimizer.max_epochs,
       callbacks = [checkpoint_callback])
 
-    # train model
-    trainer.fit(system, dm)
+    self.dm = dm
+    self.system = system
+    self.trainer = trainer
 
-    en_ds = ProductReviewEmbeddings(lang='en', split='test')
-    es_ds = ProductReviewEmbeddings(lang='es', split='test')
-    en_dl = DataLoader(en_ds, 
-      batch_size = config.system.optimizer.batch_size, 
-      num_workers = config.system.optimizer.num_workers)
-    es_dl = DataLoader(es_ds, 
-      batch_size = config.system.optimizer.batch_size, 
-      num_workers = config.system.optimizer.num_workers)
-
-    trainer.test(system, dataloaders = en_dl)
-    en_results = system.test_results
-
-    trainer.test(system, dataloaders = es_dl)
-    es_results = system.test_results
-
-    acc_diff = None
-    # =============================
-    # FILL ME OUT
-    # 
-    # Compute the difference in accuracy between two groups: 
-    # english and spanish reviews. 
-    # 
-    # Pseudocode:
-    # --
-    # acc_diff = |english accuracy - spanish accuracy|
-    # 
-    # Type:
-    # --
-    # acc_diff: float (> 0 and < 1)
-    en_acc = en_results['acc']
-    es_acc = es_results['acc']
-    acc_diff = abs(en_acc - es_acc)
-    # =============================
-
-    print(f'[lambd={lambd}] Results on English reviews:')
-    pprint(en_results)
-
-    print(f'[lambd={lambd}] Results on Spanish reviews:')
-    pprint(es_results)
-
-    self.lambd = lambd
-    self.acc_diff = acc_diff
-    self.en_results = en_results
-    self.es_results = es_results
-
-    self.next(self.join)
+    self.next(self.train_dro)
 
   @step
-  def join(self, inputs):
-    index = None
-    # =============================
-    # FILL ME OUT
-    # 
-    # Calculate the index with the lowest difference in accuracy. 
-    # 
-    # Pseudocode:
-    # --
-    # Loop through inputs. Each input has a `acc_diff` param.
-    # 
-    # Type:
-    # --
-    # index: integer
-    results = [input.acc_diff for input in inputs]
-    index = np.argmin(results)
-    # =============================
+  def train_dro(self):
+    """Calls `fit` on the trainer."""
 
-    en_results = inputs[index].en_results
-    es_results = inputs[index].es_results
-    best_lambd = inputs[index].lambd
+    # Call `fit` on the trainer with `system` and `dm`.
+    # Our solution is one line.
+    self.trainer.fit(self.system, self.dm)
 
-    print(f'[best lambd={best_lambd}] Results on English reviews:')
-    pprint(en_results)
+    self.next(self.offline_test)
 
-    print(f'[best lambd={best_lambd}] Results on Spanish reviews:')
-    pprint(es_results)
+  @step
+  def offline_test(self):
+    r"""Calls (offline) `test` on the trainer. Saves results to a log file."""
 
-    log_file = join(LOG_DIR, 'jtt_flow', 'en_results.json')
+    # Load the best checkpoint and compute results using `self.trainer.test`
+    self.trainer.test(self.system, self.dm, ckpt_path = 'best')
+    results = self.system.test_results
+
+    pprint(results)  # print results to command line
+
+    log_file = join(LOG_DIR, 'dro_flow', 'results.json')
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
-    to_json(en_results, log_file)  # save to disk
-
-    log_file = join(LOG_DIR, 'jtt_flow', 'es_results.json')
-    os.makedirs(os.path.dirname(log_file), exist_ok = True)
-    to_json(es_results, log_file)  # save to disk
+    to_json(results, log_file)  # save to disk
 
     self.next(self.end)
 
@@ -211,21 +103,20 @@ class DistRobustOpt(FlowSpec):
 
 if __name__ == "__main__":
   """
-  To validate this flow, run `python jtt_flow.py`. To list
-  this flow, run `python jtt_flow.py show`. To execute
-  this flow, run `python jtt_flow.py run`.
+  To validate this flow, run `python dro_flow.py`. To list
+  this flow, run `python dro_flow.py show`. To execute
+  this flow, run `python dro_flow.py run`.
 
   You may get PyLint errors from `numpy.random`. If so,
   try adding the flag:
 
-    `python jtt_flow.py --no-pylint run`
+    `python dro_flow.py --no-pylint run`
 
   If you face a bug and the flow fails, you can continue
   the flow at the point of failure:
 
-    `python jtt_flow.py resume`
+    `python dro_flow.py resume`
   
   You can specify a run id as well.
   """
   flow = DistRobustOpt()
-

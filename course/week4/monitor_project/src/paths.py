@@ -1,6 +1,7 @@
 from os.path import realpath, dirname, join
 
-# helpful paths we might want to access!
+# Helpful paths we might want to access! 
+# Nothing you need to do here.
 SRC_DIR = realpath(dirname(__file__))
 ROOT_DIR = realpath(join(SRC_DIR, '..'))
 ARTIFACT_DIR = realpath(join(ROOT_DIR, 'artifacts'))
