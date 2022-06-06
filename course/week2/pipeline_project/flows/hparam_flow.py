@@ -108,6 +108,11 @@ class DigitClassifierFlow(FlowSpec):
     # --
     # aggregate scores using `inputs`
     # best_index = ...
+    #
+    # Type:
+    # --
+    # scores: List[float] 
+    # best_index: integer 
     # ================================
 
     # sanity check for scores length
