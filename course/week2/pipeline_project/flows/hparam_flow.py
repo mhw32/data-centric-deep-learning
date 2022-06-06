@@ -116,10 +116,10 @@ class DigitClassifierFlow(FlowSpec):
     # ================================
 
     # sanity check for scores length
-    assert len(scores) == len(inputs), "Hmm. Incorrect length for scores."
+    assert len(scores) == len(list(inputs)), "Hmm. Incorrect length for scores."
     # sanity check for best_index
     assert best_index is not None
-    assert best_index >= 0 and best_index < len(inputs)
+    assert best_index >= 0 and best_index < len(list(inputs))
     
     # get the best system / trainer
     # we drop the callback
