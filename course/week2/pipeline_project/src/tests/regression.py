@@ -161,7 +161,7 @@ if __name__ == "__main__":
   import os
   import argparse
   parser = argparse.ArgumentParser()
-  parser.add_argument('ckpt', type=str, help='path ot trained checkpoint file')
+  parser.add_argument('ckpt', type=str, help='path to trained checkpoint file')
   args = parser.parse_args()
 
   system = DigitClassifierSystem.load_from_checkpoint(args.ckpt)
