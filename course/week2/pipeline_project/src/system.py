@@ -73,7 +73,7 @@ class MNISTDataModule(pl.LightningDataModule):
 
 
 class DigitClassifierSystem(pl.LightningModule):
-  """Remember PyTorch Lightning frmo the DL Refresher in Week 1?
+  """Remember PyTorch Lightning from the DL Refresher in Week 1?
 
   A Pytorch Lightning system to train a model to classify handwritten digits 
   using the MNIST dataset.

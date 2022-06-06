@@ -4,7 +4,6 @@ width found by hyperparameter search.
 """
 
 import os
-import wandb
 import torch
 import random
 import shutil
@@ -17,7 +16,6 @@ from metaflow import FlowSpec, step, Parameter
 
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
-from pytorch_lightning.loggers import WandbLogger
 
 from src.system import MNISTDataModule, DigitClassifierSystem
 from src.utils import load_config, to_json
