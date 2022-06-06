@@ -45,6 +45,8 @@ class DigitClassifierFlow(FlowSpec):
     np.random.seed(42)
     torch.manual_seed(42)
 
+    wandb.init()  # start wandb run
+
     self.next(self.init_system)
 
   @step

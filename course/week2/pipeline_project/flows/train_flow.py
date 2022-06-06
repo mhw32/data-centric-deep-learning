@@ -43,6 +43,9 @@ class DigitClassifierFlow(FlowSpec):
     np.random.seed(42)
     torch.manual_seed(42)
 
+    # uncomment me when logging
+    # wandb.init()  # initialize wandb module
+
     self.next(self.init_system)
 
   @step
@@ -72,6 +75,7 @@ class DigitClassifierFlow(FlowSpec):
     # what the model is doing and look out for early signs that something might 
     # be going wrong. We will be using 'Weights and Biases', a relatively new 
     # tool that makes logging in the cloud easy. 
+    # 
     # wandb_logger = WandbLogger(
     #   project = config.wandb.project, 
     #   offline = False,
@@ -101,6 +105,7 @@ class DigitClassifierFlow(FlowSpec):
     # Our solution is one line.
     self.trainer.fit(self.system, self.dm)
 
+    # uncomment me when logging
     # wandb.finish()  # close wandb run
 
     self.next(self.offline_test)

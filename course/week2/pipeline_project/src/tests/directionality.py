@@ -160,9 +160,14 @@ class MNISTDirectionalityTest(BaseTest):
       # 
       # Our solution is one line of code.
       # 
-      # Pseudocode
+      # Pseudocode:
       # --
       # batch_metric = ...
+      # 
+      # Type:
+      # --
+      # batch_metric: float (not torch.Tensor!)
+      #   Metric computed on a minibatch
       # ================================
       metric.append(batch_metric)
       pbar.update()

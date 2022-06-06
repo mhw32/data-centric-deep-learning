@@ -82,7 +82,7 @@ def build_regression_test(system, loader):
     # 
     #   `F.cross_entropy(logits, labels, reduction='none')`
     # 
-    # As another hint, make sure that `batch_is_correct` and `bath_loss` are 
+    # As another hint, make sure that `batch_is_correct` and `batch_loss` are 
     # python lists (not numpy arrays and not torch tensors). To convert a 
     # torch tensor to a list, use: `x.numpy().tolist()`. 
     # 
@@ -92,6 +92,14 @@ def build_regression_test(system, loader):
     # -- 
     # batch_loss = ...
     # convert batch_loss to list of floats
+    # 
+    # Type:
+    # --
+    # batch_loss: List[float] (not a torch.Tensor!)
+    #   List of losses for each minibatch element
+    # batch_is_correct: List[int] (not a torch.Tensor!)
+    #   List of integers - 1 if the model got that element correct 
+    #                    - 0 if the model got that element incorrect
     # ================================
     losses.extend(batch_loss)
     is_correct.extend(batch_is_correct)
@@ -153,7 +161,7 @@ if __name__ == "__main__":
   import os
   import argparse
   parser = argparse.ArgumentParser()
-  parser.add_argument('ckpt', type=str, help='path ot trained checkpoint file')
+  parser.add_argument('ckpt', type=str, help='path to trained checkpoint file')
   args = parser.parse_args()
 
   system = DigitClassifierSystem.load_from_checkpoint(args.ckpt)
