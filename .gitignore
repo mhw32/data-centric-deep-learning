@@ -134,3 +134,6 @@ dmypy.json
 **ckpts/
 **artifacts/
 **.pt
+
+.activate.sh
+.deactivate.sh
