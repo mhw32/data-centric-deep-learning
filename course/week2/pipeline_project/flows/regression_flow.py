@@ -1,6 +1,6 @@
 """
-Flow #3: This flow will train a small (linear) neural network 
-on the MNIST dataset to performance classification, and run an 
+Flow #3: This flow will train a small (linear) neural network
+on the MNIST dataset to performance classification, and run an
 regression test to measure when a model is struggling.
 """
 
@@ -26,14 +26,14 @@ from src.utils import load_config, to_json
 
 class DigitClassifierFlow(FlowSpec):
   r"""A flow that trains a image classifier to recognize handwritten
-  digit, such as those in the MNIST dataset. Includes an regression 
+  digit, such as those in the MNIST dataset. Includes an regression
   test using a trained model.
 
   Arguments
   ---------
   config (str, default: ./config.py): path to a configuration file
   """
-  config_path = Parameter('config', 
+  config_path = Parameter('config',
     help = 'path to config file', default='./configs/regression_flow.json')
 
   @step
@@ -45,13 +45,13 @@ class DigitClassifierFlow(FlowSpec):
     np.random.seed(42)
     torch.manual_seed(42)
 
-    wandb.init()  # init wandb run
+    # wandb.init()  # init wandb run
 
     self.next(self.init_system)
 
   @step
   def init_system(self):
-    r"""Instantiates a data module, pytorch lightning module, 
+    r"""Instantiates a data module, pytorch lightning module,
     and lightning trainer instance.
     """
     config = load_config(self.config_path)
@@ -67,17 +67,17 @@ class DigitClassifierFlow(FlowSpec):
       verbose = True,
     )
 
-    wandb_logger = WandbLogger(
-      project = config.wandb.project, 
-      offline = False,
-      entity = config.wandb.entity, 
-      name = 'mnist', 
-      save_dir = 'logs/wandb',
-      config = config)
+    # wandb_logger = WandbLogger(
+    #   project = config.wandb.project,
+    #   offline = False,
+    #   entity = config.wandb.entity,
+    #   name = 'mnist',
+    #   save_dir = 'logs/wandb',
+    #   config = config)
 
     trainer = Trainer(
       max_epochs = config.system.optimizer.max_epochs,
-      logger = wandb_logger,
+      # logger = wandb_logger,
       callbacks = [checkpoint_callback])
 
     self.dm = dm
@@ -92,7 +92,7 @@ class DigitClassifierFlow(FlowSpec):
 
     self.trainer.fit(self.system, self.dm)
 
-    wandb.finish()  # close wandb run
+    # wandb.finish()  # close wandb run
 
     self.next(self.offline_test)
 
@@ -107,7 +107,7 @@ class DigitClassifierFlow(FlowSpec):
     # print results to command line
     pprint(results)
 
-    log_file = join(Path(__file__).resolve().parent.parent, 
+    log_file = join(Path(__file__).resolve().parent.parent,
       f'logs/regression_flow', 'offline-test-results.json')
 
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
@@ -125,7 +125,7 @@ class DigitClassifierFlow(FlowSpec):
     results = self.system.test_results
     pprint(results)
 
-    log_file = join(Path(__file__).resolve().parent.parent, 
+    log_file = join(Path(__file__).resolve().parent.parent,
       f'logs/regression_flow', 'regression-test-results.json')
 
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
@@ -155,7 +155,7 @@ if __name__ == "__main__":
   the flow at the point of failure:
 
     `python regression_flow.py resume`
-  
+
   You can specify a run id as well.
   """
   flow = DigitClassifierFlow()

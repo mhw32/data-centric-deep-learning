@@ -1,13 +1,13 @@
 """
-Directionality tests help you measure the 'robustness' of a trained 
-model in terms of human expectations. These tests differ wildly by 
-application. For handwritten digits application, we look at two 
-different notions of robustness. 
+Directionality tests help you measure the 'robustness' of a trained
+model in terms of human expectations. These tests differ wildly by
+application. For handwritten digits application, we look at two
+different notions of robustness.
 
-1) A model should work just as well if the digit is rotated a little. 
+1) A model should work just as well if the digit is rotated a little.
 2) A model should work just as well if a bit of noise is in the image.
 
-In short, consistency is what we care about, not correctness -- which 
+In short, consistency is what we care about, not correctness -- which
 is the job of the integration and regression tests. Here, we care that
 manual transformations of the image do not impact the model's predictions.
 """
@@ -31,19 +31,19 @@ class GaussianNoise(object):
   def __init__(self, mean=0., std=1.):
     self.std = std
     self.mean = mean
-    
+
   def __call__(self, tensor):
     return tensor + torch.randn(tensor.size()) * self.std + self.mean
-  
+
   def __repr__(self):
     return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
 
 
 class MNISTDirectionalityTest(BaseTest):
-  r"""A directionality test includes a set of tuples, with each 
-  tuple containing two data points (one untransformed and one 
+  r"""A directionality test includes a set of tuples, with each
+  tuple containing two data points (one untransformed and one
   transformed). The test checks if the model's prediction changes
-  between the two tuples. 
+  between the two tuples.
 
   Arguments
   ---------
@@ -63,7 +63,7 @@ class MNISTDirectionalityTest(BaseTest):
     self.dataset = dataset
 
   def load_integration_examples(self):
-    r"""Returns paths for handwritten digits from the integration test. 
+    r"""Returns paths for handwritten digits from the integration test.
     We do not need the labels.
 
     Returns
@@ -82,8 +82,8 @@ class MNISTDirectionalityTest(BaseTest):
         pick random noise
         add (original image, image + random noise)
         pick random rotation
-        add (original image, image + random rotation) 
-    
+        add (original image, image + random rotation)
+
     where the random noise and rotation are randomly sampled. Each
     time you run this test, you may get slightly different results.
 
@@ -137,10 +137,9 @@ class MNISTDirectionalityTest(BaseTest):
 
   def test(self, trainer, system):
     loader = self.get_dataloader()
-    pbar = tqdm(total = len(loader), leave = True, position = 0)
 
     metric = []
-    for batch in loader:
+    for batch in tqdm(loader):
       image_raw, image_transformed = batch
 
       logits_raw = system.predict_step(image_raw)
@@ -151,27 +150,26 @@ class MNISTDirectionalityTest(BaseTest):
       batch_metric = 0  # store metric here
       # ================================
       # FILL ME OUT
-      # 
-      # Compute the fraction of times the transformed images maintains 
+      #
+      # Compute the fraction of times the transformed images maintains
       # the same prediction. Store this in the `batch_metric` variable.
-      # 
+      #
       # Make sure batch_metric is a floating point number, not a torch.Tensor.
       # You can extract a value from a torch.Tensor with `.item()`.
-      # 
+      #
       # Our solution is one line of code.
-      # 
+      #
       # Pseudocode:
       # --
       # batch_metric = ...
-      # 
+      #
       # Type:
       # --
       # batch_metric: float (not torch.Tensor!)
       #   Metric computed on a minibatch
       # ================================
+      batch_metric = torch.mean(preds_raw == preds_transformed, dtype=torch.float).item()
       metric.append(batch_metric)
-      pbar.update()
-    pbar.close()
 
     results = {'acc': float(np.mean(metric))}
     system.test_results = results

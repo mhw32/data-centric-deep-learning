@@ -1,5 +1,5 @@
 """
-Integration tests must pass for every new model version. These 
+Integration tests must pass for every new model version. These
 represent core functionality that a model must pass to be deployed
 in real world applications.
 """
@@ -15,7 +15,7 @@ from src.tests.base import BaseTest
 
 
 class MNISTIntegrationTest(BaseTest):
-  """An integration test include a set of examples that a model 
+  """An integration test include a set of examples that a model
   must pass before being deployed in practice. For this project,
   we include a set of 10 handwritten digits (provided by you!) that
   the model must correctly classify.
@@ -26,7 +26,7 @@ class MNISTIntegrationTest(BaseTest):
     paths, labels = [], []
 
     # Store the paths of all processed images in the `paths` list.
-    # Use the `labels.csv` to fill out the `labels` list with the 
+    # Use the `labels.csv` to fill out the `labels` list with the
     # corresponding labels for each path in `paths`.
     test_dir = join(self.root, 'integration')
     labels_df = pd.read_csv(join(test_dir, 'labels.csv'))
@@ -42,7 +42,7 @@ class MNISTIntegrationTest(BaseTest):
 
   def get_dataloader(self, batch_size = 10):
     # returns a data loader
-    dataset = MNISTIntegrationDataset(self.paths, self.labels, 
+    dataset = MNISTIntegrationDataset(self.paths, self.labels,
       transform = transforms.ToTensor())
     loader = DataLoader(dataset, batch_size=batch_size)
     return loader
@@ -62,8 +62,9 @@ class MNISTIntegrationTest(BaseTest):
     # Notes:
     # --
     # Nothing to return here
-    pass  # remove me
     # ================================
+    dataloader = self.get_dataloader()
+    trainer.test(system, dataloaders=[dataloader])
 
 
 class MNISTIntegrationDataset(Dataset):
