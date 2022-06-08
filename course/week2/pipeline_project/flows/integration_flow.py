@@ -45,7 +45,7 @@ class DigitClassifierFlow(FlowSpec):
     np.random.seed(42)
     torch.manual_seed(42)
 
-    # wandb.init(project='digit_classifier_flow')  # init wandb run
+    # wandb.init()  # init wandb run
 
     self.next(self.init_system)
 
@@ -90,8 +90,6 @@ class DigitClassifierFlow(FlowSpec):
   def train_model(self):
     """Calls `fit` on the trainer."""
 
-    # with wandb.init(project='digit_classifier_flow'):
-        # self.trainer.logger =
     self.trainer.fit(self.system, self.dm)
 
     # wandb.finish()  # close wandb run
