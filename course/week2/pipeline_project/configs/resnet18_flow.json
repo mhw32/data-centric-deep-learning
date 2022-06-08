@@ -4,18 +4,17 @@
       "root": "./artifacts/data/mnist"
     },
     "model": {
-      "name": "mlp",
-      "width": 16
+      "name": "resnet18"
     },
     "optimizer": {
       "max_epochs": 10,
       "batch_size": 32,
       "lr": 4e-3
     },
-    "save_dir": "./artifacts/ckpts/regression_flow"
+    "save_dir": "./artifacts/ckpts/resnet18_flow"
   },
   "wandb": {
-    "project": "regression_flow",
+    "project": "resnet18_flow",
     "entity": "thnd"
   }
 }

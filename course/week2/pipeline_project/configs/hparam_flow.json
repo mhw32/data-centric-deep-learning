@@ -16,6 +16,6 @@
   },
   "wandb": {
     "project": "hparam_flow",
-    "entity": "<USERNAME>"
+    "entity": "thnd"
   }
 }
