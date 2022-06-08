@@ -1,5 +1,5 @@
 """
-Flow #2: This flow will train a multilayer perceptron with a 
+Flow #2: This flow will train a multilayer perceptron with a
 width found by hyperparameter search.
 """
 
@@ -23,14 +23,14 @@ from src.utils import load_config, to_json
 
 class DigitClassifierFlow(FlowSpec):
   r"""A flow that trains a image classifier to recognize handwritten
-  digit, such as those in the MNIST dataset. We search over three 
+  digit, such as those in the MNIST dataset. We search over three
   potential different widths.
 
   Arguments
   ---------
   config (str, default: ./config.py): path to a configuration file
-  """ 
-  config_path = Parameter('config', 
+  """
+  config_path = Parameter('config',
     help = 'path to config file', default='./configs/hparam_flow.json')
 
   @step
@@ -49,7 +49,7 @@ class DigitClassifierFlow(FlowSpec):
 
   @step
   def init_and_train(self):
-    r"""Instantiates a data module, pytorch lightning module, 
+    r"""Instantiates a data module, pytorch lightning module,
     and lightning trainer instance. Calls `fit` on the trainer.
 
     This should remind of you of `init_system` and `train_model`
@@ -92,18 +92,18 @@ class DigitClassifierFlow(FlowSpec):
 
     scores = []        # populate with scores from each hparams
     best_index = None  # replace with best index
-    
+
     # ================================
     # FILL ME OUT
-    # 
+    #
     # Aggregate the best validation performance across inputs into
     # the variable `scores`.
-    # 
+    #
     # HINT: the `callback` object has a property `best_model_score`
-    #       that make come in handy. 
-    # 
+    #       that make come in handy.
+    #
     # Then, compute the index of the model and store it in `best_index`.
-    # 
+    #
     # Pseudocode:
     # --
     # aggregate scores using `inputs`
@@ -111,16 +111,18 @@ class DigitClassifierFlow(FlowSpec):
     #
     # Type:
     # --
-    # scores: List[float] 
-    # best_index: integer 
+    # scores: List[float]
+    # best_index: integer
     # ================================
+    scores = [inputt.callback.best_model_score for inputt in inputs]
+    best_index = np.argmax(scores)
 
     # sanity check for scores length
     assert len(scores) == len(list(inputs)), "Hmm. Incorrect length for scores."
     # sanity check for best_index
     assert best_index is not None
     assert best_index >= 0 and best_index < len(list(inputs))
-    
+
     # get the best system / trainer
     # we drop the callback
     self.system = inputs[best_index].system
@@ -142,13 +144,13 @@ class DigitClassifierFlow(FlowSpec):
 
     pprint(results)
 
-    log_file = join(Path(__file__).resolve().parent.parent, 
+    log_file = join(Path(__file__).resolve().parent.parent,
       f'logs/hparam_flow', 'offline-test-results.json')
 
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
     to_json(results, log_file)  # save to disk
 
-    self.next(self.end)  
+    self.next(self.end)
 
   @step
   def end(self):
@@ -171,7 +173,7 @@ if __name__ == "__main__":
   the flow at the point of failure:
 
     `python hparam_flow.py resume`
-  
+
   You can specify a run id as well.
   """
   flow = DigitClassifierFlow()

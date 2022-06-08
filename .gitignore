@@ -137,3 +137,4 @@ dmypy.json
 
 .activate.sh
 .deactivate.sh
+wandb/
