@@ -9,6 +9,7 @@ from torch.utils.data import Subset, DataLoader
 
 import pytorch_lightning as pl
 from torchvision import datasets, transforms
+from torchvision.models import resnet18
 
 
 class MNISTDataModule(pl.LightningDataModule):
@@ -17,9 +18,9 @@ class MNISTDataModule(pl.LightningDataModule):
   def __init__(self, config):
     super().__init__()
 
-    # Load the training and test splits of MNIST 
+    # Load the training and test splits of MNIST
     # using `torchvision.datasets`. See
-    # https://pytorch.org/vision/stable/datasets.html 
+    # https://pytorch.org/vision/stable/datasets.html
     train_dataset = datasets.MNIST(
       config.system.data.root,
       download = True,
@@ -40,7 +41,7 @@ class MNISTDataModule(pl.LightningDataModule):
 
     # Split the train dataset into a train and dev set.
     # Keep 80% of the `train_dataset` as training and use the
-    # rest as a dev set. 
+    # rest as a dev set.
     dev_size = int(len(train_dataset) * 0.2)
     indices = torch.randperm(len(train_dataset)).tolist()
     _train_dataset = Subset(train_dataset, indices[:-dev_size])
@@ -60,9 +61,9 @@ class MNISTDataModule(pl.LightningDataModule):
     self.batch_size = config.system.optimizer.batch_size
 
   def train_dataloader(self):
-    # Create a dataloader for train dataset. 
+    # Create a dataloader for train dataset.
     # Set `shuffle=True` for the training dataset.
-    return DataLoader(self.train_dataset, batch_size = self.batch_size, 
+    return DataLoader(self.train_dataset, batch_size = self.batch_size,
       shuffle = True)
 
   def val_dataloader(self):
@@ -75,7 +76,7 @@ class MNISTDataModule(pl.LightningDataModule):
 class DigitClassifierSystem(pl.LightningModule):
   """Remember PyTorch Lightning from the DL Refresher in Week 1?
 
-  A Pytorch Lightning system to train a model to classify handwritten digits 
+  A Pytorch Lightning system to train a model to classify handwritten digits
   using the MNIST dataset.
 
   Arguments
@@ -107,7 +108,8 @@ class DigitClassifierSystem(pl.LightningModule):
         nn.ReLU(),
         nn.Linear(self.config.system.model.width, 10)
       )
-
+    elif self.config.system.model.name == 'resnet18':
+        model = resnet18()
     else:
       raise Exception(f"Model {self.config.system.model.name} not supported.")
 
@@ -117,7 +119,7 @@ class DigitClassifierSystem(pl.LightningModule):
     image = image.view(image.size(0), -1)  # flatten the image
     logits = self.model(image)
     return logits
-  
+
   def configure_optimizers(self):
     optimizer = optim.Adam(self.parameters(), lr=self.config.system.optimizer.lr)
     return optimizer
