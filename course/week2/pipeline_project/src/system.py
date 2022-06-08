@@ -116,7 +116,12 @@ class DigitClassifierSystem(pl.LightningModule):
     return model
 
   def forward(self, image):
-    image = image.view(image.size(0), -1)  # flatten the image
+    if self.config.system.model.name == 'resnet18':
+        # Reshape the image to have a single 28x28 channel, and then
+        # copy the same image into 3 input channels
+        image = image.view(-1, 1, 28, 28).repeat(1, 3, 1, 1)
+    else:
+        image = image.view(image.size(0), -1)  # flatten the image
     logits = self.model(image)
     return logits
 
