@@ -129,6 +129,10 @@ def predict(request: Request, body: InferenceInput):
     # Pseudocode:
     # --
     # logits = ... (use system)
+    # 
+    # Types:
+    # --
+    # logits: torch.Tensor (shape: 1x10)
     # ================================
 
     # To extract the label, just find the largest logit.
@@ -146,6 +150,10 @@ def predict(request: Request, body: InferenceInput):
     # Pseudocode:
     # --
     # probs = ...do something to logits...
+    # 
+    # Types:
+    # --
+    # probs: torch.Tensor (shape: 1x10)
     # ================================
     probs = probs.squeeze(0)        # squeeze to (10) shape
     probs = probs.numpy().tolist()  # convert tensor to list

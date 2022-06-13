@@ -45,6 +45,10 @@ class PredictionTask(Task):
     # Pseudocode:
     # --
     # system = ...
+    # 
+    # Types:
+    # --
+    # system: DigitClassifierSystem
     # ================================
     assert system is not None, "System is not loaded."
     return system.eval()
@@ -94,6 +98,10 @@ def predict_single(self, data):
     # Pseudocode:
     # --
     # logits = ... (use system)
+    # 
+    # Types:
+    # --
+    # logits: torch.Tensor (shape: 1x10)
     # ================================
     assert logits is not None, "logits is not defined."
 
@@ -110,6 +118,10 @@ def predict_single(self, data):
     # Pseudocode:
     # --
     # probs = ...do something to logits...
+    # 
+    # Types:
+    # --
+    # probs: torch.Tensor (shape: 1x10)
     # ================================
     assert probs is not None, "probs is not defined."
     probs = probs.squeeze(0)        # squeeze to (10) shape
@@ -123,7 +135,7 @@ def predict_single(self, data):
   # why we need Celery.
   # 
   # Uncomment me when you are told to in the notes!
-  time.sleep(5)
+  # time.sleep(5)
   # ================================
 
   return results
