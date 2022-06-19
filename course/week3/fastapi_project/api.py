@@ -130,6 +130,10 @@ def predict(request: Request, body: InferenceInput):
     # Pseudocode:
     # --
     # logits = ... (use system)
+    # 
+    # Types:
+    # --
+    # logits: torch.Tensor (shape: 1x10)
     # ================================
     assert im.shape == (1, 1, 28, 28)
     logits = system(im)
@@ -150,6 +154,10 @@ def predict(request: Request, body: InferenceInput):
     # Pseudocode:
     # --
     # probs = ...do something to logits...
+    # 
+    # Types:
+    # --
+    # probs: torch.Tensor (shape: 1x10)
     # ================================
     probs = torch.sigmoid(logits)
     probs = probs.squeeze(0)        # squeeze to (10) shape

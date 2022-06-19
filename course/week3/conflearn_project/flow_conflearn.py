@@ -163,6 +163,10 @@ class TrainIdentifyReview(FlowSpec):
       # Create `Trainer` and call `fit`.
       # Call `predict` on `Trainer` and the test data loader.
       # Convert probabilities back to numpy (make sure 1D).
+      # 
+      # Types:
+      # --
+      # probs_: np.array[float] (shape: |test set|)
       # ===============================================
       assert probs_ is not None, "`probs_` is not defined."
       probs[test_index] = probs_
@@ -203,6 +207,10 @@ class TrainIdentifyReview(FlowSpec):
     # HINT: use cleanlab. See tutorial. 
     # 
     # Our solution is one function call.
+    # 
+    # Types
+    # --
+    # ranked_label_issues: List[int]
     # =============================
     assert ranked_label_issues is not None, "`ranked_label_issues` not defined."
 
