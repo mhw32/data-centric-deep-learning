@@ -1,4 +1,4 @@
-"""This flow will train a neural network to perform sentiment classification 
+"""This flow will train a neural network to perform sentiment classification
 for the beauty products reviews.
 """
 
@@ -11,12 +11,17 @@ from os.path import join
 from pathlib import Path
 from pprint import pprint
 from torch.utils.data import DataLoader, TensorDataset
+from torch import tensor
+import torch
 
 from metaflow import FlowSpec, step, Parameter
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.callbacks import TQDMProgressBar
+from pytorch_lightning.loggers import WandbLogger
 from cleanlab.filter import find_label_issues
 from sklearn.model_selection import KFold
+import wandb
 
 from src.system import ReviewDataModule, SentimentClassifierSystem
 from src.utils import load_config, to_json
@@ -25,14 +30,14 @@ from src.consts import DATA_DIR
 
 class TrainIdentifyReview(FlowSpec):
   r"""A MetaFlow that trains a sentiment classifier on reviews of luxury beauty
-  products using PyTorch Lightning, identifies data quality issues using CleanLab, 
+  products using PyTorch Lightning, identifies data quality issues using CleanLab,
   and prepares them for review in LabelStudio.
 
   Arguments
   ---------
   config (str, default: ./config.py): path to a configuration file
   """
-  config_path = Parameter('config', 
+  config_path = Parameter('config',
     help = 'path to config file', default='./config.json')
 
   @step
@@ -48,7 +53,7 @@ class TrainIdentifyReview(FlowSpec):
 
   @step
   def init_system(self):
-    r"""Instantiates a data module, pytorch lightning module, 
+    r"""Instantiates a data module, pytorch lightning module,
     and lightning trainer instance.
     """
     # configuration files contain all hyperparameters
@@ -85,8 +90,8 @@ class TrainIdentifyReview(FlowSpec):
   @step
   def train_test(self):
     """Calls `fit` on the trainer.
-    
-    We first train and (offline) evaluate the model to see what 
+
+    We first train and (offline) evaluate the model to see what
     performance would be without any improvements to data quality.
     """
     # Call `fit` on the trainer with `system` and `dm`.
@@ -100,19 +105,19 @@ class TrainIdentifyReview(FlowSpec):
     # print results to command line
     pprint(results)
 
-    log_file = join(Path(__file__).resolve().parent.parent, 
+    log_file = join(Path(__file__).resolve().parent.parent,
       f'logs', 'pre-results.json')
 
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
     to_json(results, log_file)  # save to disk
 
     self.next(self.crossval)
-  
+
   @step
   def crossval(self):
-    r"""Confidence learning requires cross validation to compute 
+    r"""Confidence learning requires cross validation to compute
     out-of-sample probabilities for every element. Each element
-    will appear in a single cross validation split exactly once. 
+    will appear in a single cross validation split exactly once.
     """
     # combine training and dev datasets
     X = np.concatenate([
@@ -130,29 +135,31 @@ class TrainIdentifyReview(FlowSpec):
 
     # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.KFold.html
     kf = KFold(n_splits=3)    # create kfold splits
+    print('start kfold')
 
     for train_index, test_index in kf.split(X):
+      print(f'train_index={len(train_index)}, test_index={len(test_index)}')
       probs_ = None
       # ===============================================
       # FILL ME OUT
-      # 
-      # Fit a new `SentimentClassifierSystem` on the split of 
+      #
+      # Fit a new `SentimentClassifierSystem` on the split of
       # `X` and `y` defined by the current `train_index` and
-      # `test_index`. Then, compute predicted probabilities on 
+      # `test_index`. Then, compute predicted probabilities on
       # the test set. Store these probabilities as a 1-D numpy
       # array `probs_`.
-      # 
-      # Use `self.config.train.optimizer` to specify any hparams 
+      #
+      # Use `self.config.train.optimizer` to specify any hparams
       # like `batch_size` or `epochs`.
-      #  
-      # HINT: `X` and `y` are currently numpy objects. You will 
-      # need to convert them to torch tensors prior to training. 
-      # You may find the `TensorDataset` class useful. Remember 
+      #
+      # HINT: `X` and `y` are currently numpy objects. You will
+      # need to convert them to torch tensors prior to training.
+      # You may find the `TensorDataset` class useful. Remember
       # that `Trainer.fit` and `Trainer.predict` take `DataLoaders`
       # as an input argument.
-      # 
+      #
       # Our solution is ~15 lines of code.
-      # 
+      #
       # Pseudocode:
       # --
       # Get train and test slices of X and y.
@@ -163,13 +170,50 @@ class TrainIdentifyReview(FlowSpec):
       # Create `Trainer` and call `fit`.
       # Call `predict` on `Trainer` and the test data loader.
       # Convert probabilities back to numpy (make sure 1D).
-      # 
+      #
       # Types:
       # --
       # probs_: np.array[float] (shape: |test set|)
       # ===============================================
-      assert probs_ is not None, "`probs_` is not defined."
-      probs[test_index] = probs_
+      X_train, y_train = X[train_index], y[train_index]
+      X_test, y_test = X[test_index], y[test_index]
+      dataset_train = TensorDataset(tensor(X_train), tensor(y_train))
+      dataset_test = TensorDataset(tensor(X_test), tensor(y_test))
+      batch_size = self.config.train.optimizer.batch_size
+      loader_train = DataLoader(dataset_train, batch_size=batch_size)
+      loader_test = DataLoader(dataset_test, batch_size=batch_size)
+
+      system = SentimentClassifierSystem(load_config(self.config_path))
+
+      # a callback to save best model weights
+      checkpoint_callback = ModelCheckpoint(
+        dirpath = self.config.train.ckpt_dir,
+        monitor = 'train_loss',
+        mode = 'min',    # look for lowest `dev_loss`
+        save_top_k = 1,  # save top 1 checkpoints
+        verbose = True,
+      )
+      with wandb.init(project=self.config.wandb.project):
+        wandb_logger = WandbLogger(
+            project=self.config.wandb.project,
+            offline=False,
+            entity=self.config.wandb.entity,
+            name='kfold_sentiment',
+            save_dir='logs/wandb',
+            config=self.config)
+
+        trainer = Trainer(
+          max_epochs = self.config.train.optimizer.max_epochs,
+          callbacks=[TQDMProgressBar(), checkpoint_callback],
+          logger=wandb_logger
+        )
+        trainer.fit(system, loader_train)
+        batch_preds = trainer.predict(dataloaders=loader_test)
+        probs_ = torch.cat(batch_preds).squeeze()  # pylint: disable
+        assert probs_.shape == (len(test_index),)
+
+        assert probs_ is not None, "`probs_` is not defined."
+        probs[test_index] = probs_
 
     # create a single dataframe with all input features
     all_df = pd.concat([
@@ -189,29 +233,33 @@ class TrainIdentifyReview(FlowSpec):
 
   @step
   def inspect(self):
-    r"""Use confidence learning over examples to identify labels that 
-    likely have issues with the `cleanlab` tool. 
+    r"""Use confidence learning over examples to identify labels that
+    likely have issues with the `cleanlab` tool.
     """
     prob = np.asarray(self.all_df.prob)
     prob = np.stack([1 - prob, prob]).T
-  
+
     # rank label indices by issues
-    ranked_label_issues = None
-    
+
     # =============================
     # FILL ME OUT
-    # 
+    #
     # Apply confidence learning to labels and out-of-sample
-    # predicted probabilities. 
-    # 
-    # HINT: use cleanlab. See tutorial. 
-    # 
+    # predicted probabilities.
+    #
+    # HINT: use cleanlab. See tutorial.
+    #
     # Our solution is one function call.
-    # 
+    #
     # Types
     # --
     # ranked_label_issues: List[int]
     # =============================
+    ranked_label_issues = find_label_issues(
+        self.all_df.label,
+        prob,
+        return_indices_ranked_by='self_confidence'
+    )
     assert ranked_label_issues is not None, "`ranked_label_issues` not defined."
 
     # save this to class
@@ -228,7 +276,7 @@ class TrainIdentifyReview(FlowSpec):
 
   @step
   def review(self):
-    r"""Format the data quality issues found such that they are ready to be 
+    r"""Format the data quality issues found such that they are ready to be
     imported into LabelStudio. We expect the following format:
 
     [
@@ -253,7 +301,7 @@ class TrainIdentifyReview(FlowSpec):
 
     See https://labelstud.io/guide/predictions.html#Import-pre-annotations-for-text.and
 
-    You do not need to complete anything in this function. However, look through the 
+    You do not need to complete anything in this function. However, look through the
     code and make sure the operations and output make sense.
     """
     outputs = []
@@ -289,7 +337,7 @@ class TrainIdentifyReview(FlowSpec):
 
   @step
   def retrain_retest(self):
-    r"""Retrain without reviewing. Let's assume all the labels that 
+    r"""Retrain without reviewing. Let's assume all the labels that
     confidence learning suggested to flip are indeed erroneous."""
     dm = ReviewDataModule(self.config)
     train_size = len(dm.train_dataset)
@@ -297,17 +345,20 @@ class TrainIdentifyReview(FlowSpec):
 
     # ====================================
     # FILL ME OUT
-    # 
-    # Overwrite the dataframe in each dataset with `all_df`. Make sure to 
+    #
+    # Overwrite the dataframe in each dataset with `all_df`. Make sure to
     # select the right indices. Since `all_df` contains the corrected labels,
     # training on it will incorporate cleanlab's re-annotations.
-    # 
+    #
     # Pseudocode:
     # --
     # dm.train_dataset.data = training slice of self.all_df
     # dm.dev_dataset.data = dev slice of self.all_df
     # dm.test_dataset.data = test slice of self.all_df
     # # ====================================
+    dm.train_dataset.data = self.all_df.iloc[:train_size]
+    dm.dev_dataset.data = self.all_df.iloc[train_size:train_size+dev_size]
+    dm.test_dataset.data = self.all_df.iloc[train_size+dev_size:]
 
     # start from scratch
     system = SentimentClassifierSystem(self.config)
@@ -320,7 +371,7 @@ class TrainIdentifyReview(FlowSpec):
 
     pprint(results)
 
-    log_file = join(Path(__file__).resolve().parent.parent, 
+    log_file = join(Path(__file__).resolve().parent.parent,
       f'logs', 'post-results.json')
 
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
@@ -349,7 +400,7 @@ if __name__ == "__main__":
   the flow at the point of failure:
 
     `python flow_conflearn.py resume`
-  
+
   You can specify a run id as well.
   """
   flow = TrainIdentifyReview()

@@ -15,5 +15,9 @@
   },
   "review": {
     "save_dir": "./log"
+  },
+  "wandb": {
+    "project": "conflearn_flow",
+    "entity": "thnd"
   }
 }
