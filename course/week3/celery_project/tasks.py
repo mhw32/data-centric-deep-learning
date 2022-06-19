@@ -45,12 +45,12 @@ class PredictionTask(Task):
     # Pseudocode:
     # --
     # system = ...
-    # 
+    #
     # Types:
     # --
     # system: DigitClassifierSystem
     # ================================
-    system = DigitClassifierSystem.from_checkpoint(MODLE_PATH)
+    system = DigitClassifierSystem.load_from_checkpoint(MODEL_PATH)
     assert system is not None, "System is not loaded."
     return system.eval()
 
@@ -90,21 +90,7 @@ def predict_single(self, data):
   results = {'label': None, 'probs': None}
 
   with torch.no_grad():
-    logits = None
-    # ================================
-    # FILL ME OUT
-    #
-    # Copy over your solution from `week3_fastapi/api.py`.
-    #
-    # Pseudocode:
-    # --
-    # logits = ... (use system)
-    # 
-    # Types:
-    # --
-    # logits: torch.Tensor (shape: 1x10)
-    # ================================
-    assert im.shape == (1, 1, 28, 28)
+    system = self.get_system()
     logits = system(im)
     assert logits.shape == (1, 10)
     assert logits is not None, "logits is not defined."
@@ -122,7 +108,7 @@ def predict_single(self, data):
     # Pseudocode:
     # --
     # probs = ...do something to logits...
-    # 
+    #
     # Types:
     # --
     # probs: torch.Tensor (shape: 1x10)
@@ -140,7 +126,7 @@ def predict_single(self, data):
   # why we need Celery.
   #
   # Uncomment me when you are told to in the notes!
-  # time.sleep(5)
+  time.sleep(5)
   # ================================
 
   return results
