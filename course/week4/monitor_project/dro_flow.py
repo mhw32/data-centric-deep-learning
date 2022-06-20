@@ -39,7 +39,7 @@ class DistRobustOpt(FlowSpec):
     np.random.seed(42)
     torch.manual_seed(42)
 
-    self.next(self.load_system)
+    self.next(self.init_system)
 
   @step
   def init_system(self):
