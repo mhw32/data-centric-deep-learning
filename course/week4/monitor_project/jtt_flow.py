@@ -1,11 +1,10 @@
-"""Flow implementing "Just Train Twice: Improving Group Robustness without
+"""Flow implementing "Just Train Twice: Improving Group Robustness without 
 Training Group Information". See https://arxiv.org/pdf/2107.09044.pdf.
 """
 import os
 import torch
 import random
 import numpy as np
-import wandb
 from pprint import pprint
 from os.path import join
 from torch.utils.data import DataLoader
@@ -14,7 +13,6 @@ from metaflow import FlowSpec, step, Parameter
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
-from pytorch_lightning.loggers import WandbLogger
 
 from src.systems import ReviewDataModule, SentimentClassifierSystem
 from src.dataset import ProductReviewEmbeddings
@@ -23,16 +21,16 @@ from src.utils import load_config, to_json
 
 
 class JustTrainTwice(FlowSpec):
-  r"""A flow that implements Algorithm 1 on page 5 of the paper.
+  r"""A flow that implements Algorithm 1 on page 5 of the paper. 
 
-  We build a dataset E of training examples misclassified by the
+  We build a dataset E of training examples misclassified by the 
   trained model. Then, we retrain the model from scratch and upweight
-  the samples in E. We choose between multiple upweight parameters
+  the samples in E. We choose between multiple upweight parameters 
   to see which one results in the best performance.
   """
-  config_path = Parameter('config',
+  config_path = Parameter('config', 
     help = 'path to config file', default = join(CONFIG_DIR, 'jtt.json'))
-
+  
   @step
   def start(self):
     r"""Start node.
@@ -55,7 +53,7 @@ class JustTrainTwice(FlowSpec):
     self.config = config
     self.system = system
     self.trainer = trainer
-
+  
     self.next(self.build_weights)
 
   @step
@@ -63,66 +61,38 @@ class JustTrainTwice(FlowSpec):
     r"""Build map from example to weight."""
 
     ds = ProductReviewEmbeddings(lang='mix', split='train')
-    dl = DataLoader(ds, batch_size=self.config.system.optimizer.batch_size,
-      # num_workers=self.config.system.optimizer.num_workers)
-      num_workers=1)
+    dl = DataLoader(ds, batch_size=self.config.system.optimizer.batch_size, 
+      num_workers=self.config.system.optimizer.num_workers)
 
     weights = None
     # =============================
     # FILL ME OUT
-    #
-    # Find out which examples in the training dataset the trained model gets
+    # 
+    # Find out which examples in the training dataset the trained model gets 
     # incorrect. We expect the variable `weights` to be a `torch.FloatTensor`
-    # of the same size as `len(ds)`. The entries in `weights` are either 0 or
-    # 1 where the entry is 1 if the model is incorrect.
-    #
+    # of the same size as `len(ds)`. The entries in `weights` are either 0 or 
+    # 1 where the entry is 1 if the model is incorrect. 
+    # 
     # Pseudocode:
     # --
     # Get predicted probabilities with `self.trainer` on the DataLoader `dl`.
-    # Round probabilities to predictions, and compare to labels.
-    # Element-wise comparison from predictions to labels to see if
-    #   each element matches.
+    # Round probabilities to predictions, and compare to labels. 
+    # Element-wise comparison from predictions to labels to see if 
+    #   each element matches. 
     # Store the result into `weights`.
-    #
+    # 
     # Type:
     # --
     # weights: torch.FloatTensor (length: |ds|)
     # =============================
-    # with wandb.init(project=self.config.wandb.project):
-    #     wandb_logger = WandbLogger(
-    #         project=self.config.wandb.project,
-    #         offline=False,
-    #         entity=self.config.wandb.entity,
-    #         name='jtt',
-    #         save_dir='logs/wandb',
-    #         config=self.config,
-    #     )
-    #     self.trainer.logger = wandb_logger
-    batch_preds = self.trainer.predict(model=self.system, dataloaders=dl)
-    preds = torch.cat(batch_preds)  # pylint: disable
-    assert preds.shape == (len(ds), 1)
-    preds_rounded = torch.round(preds).long()
-    weights = preds_rounded != ds.get_labels()
     self.weights = weights
-
-    # search through all of these lambda for upweighting
-    # self.ls = [5, 10, 20 ,30, 40, 50, 100]
-    self.ls = [5]
-    import sys
-    # print('end of build_weights')
-    print(self.retrain)
-    sys.stdout.flush()
-    print(self.next)
-    sys.stdout.flush()
-    print(self.ls)
-    sys.stdout.flush()
-    # self.next(self.retrain)
-    self.next(self.retrain, foreach='ls')
+    
+    # search through all of these lambda for upweighting 
+    self.lambd = [5, 10, 20 ,30, 40, 50, 100]
+    self.next(self.retrain, foreach='lambd')
 
   @step
   def retrain(self):
-    for _ in range(100):
-        print('starting retrain')
     lambd = self.input
     config = self.config
 
@@ -149,11 +119,11 @@ class JustTrainTwice(FlowSpec):
 
     en_ds = ProductReviewEmbeddings(lang='en', split='test')
     es_ds = ProductReviewEmbeddings(lang='es', split='test')
-    en_dl = DataLoader(en_ds,
-      batch_size = config.system.optimizer.batch_size,
+    en_dl = DataLoader(en_ds, 
+      batch_size = config.system.optimizer.batch_size, 
       num_workers = config.system.optimizer.num_workers)
-    es_dl = DataLoader(es_ds,
-      batch_size = config.system.optimizer.batch_size,
+    es_dl = DataLoader(es_ds, 
+      batch_size = config.system.optimizer.batch_size, 
       num_workers = config.system.optimizer.num_workers)
 
     trainer.test(system, dataloaders = en_dl)
@@ -165,14 +135,14 @@ class JustTrainTwice(FlowSpec):
     acc_diff = None
     # =============================
     # FILL ME OUT
-    #
-    # Compute the difference in accuracy between two groups:
-    # english and spanish reviews.
-    #
+    # 
+    # Compute the difference in accuracy between two groups: 
+    # english and spanish reviews. 
+    # 
     # Pseudocode:
     # --
     # acc_diff = |english accuracy - spanish accuracy|
-    #
+    # 
     # Type:
     # --
     # acc_diff: float (> 0 and < 1)
@@ -193,23 +163,22 @@ class JustTrainTwice(FlowSpec):
 
   @step
   def join(self, inputs):
-
     index = None
     # =============================
     # FILL ME OUT
-    #
-    # Calculate the index with the lowest difference in accuracy.
-    #
+    # 
+    # Calculate the index with the lowest difference in accuracy. 
+    # 
     # Pseudocode:
     # --
     # Loop through inputs. Each input has a `acc_diff` param.
-    #
+    # 
     # Type:
     # --
     # index: integer
-    #
+    # 
     # Notes:
-    # --
+    # -- 
     # Our solution is 2 lines of code.
     # =============================
 
@@ -254,7 +223,7 @@ if __name__ == "__main__":
   the flow at the point of failure:
 
     `python jtt_flow.py resume`
-
+  
   You can specify a run id as well.
   """
   flow = JustTrainTwice()
