@@ -1,7 +1,7 @@
 {
   "system": {
     "pretrain": {
-      "ckpt_path": "./artifacts/ckpts/update/epoch=9-step=12500.ckpt"
+      "ckpt_path": "artifacts/ckpts/update/epoch=8-step=11250.ckpt"
     },
     "data": {
       "lang": "mix"
@@ -16,5 +16,9 @@
       "num_workers": 4
     },
     "save_dir": "./artifacts/ckpts/jtt"
+  },
+  "wandb": {
+    "project": "jtt",
+    "entity": "thnd"
   }
 }

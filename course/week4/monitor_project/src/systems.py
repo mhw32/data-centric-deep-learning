@@ -37,7 +37,7 @@ class ReviewDataModule(pl.LightningDataModule):
     self.num_workers = config.system.optimizer.num_workers
 
   def train_dataloader(self):
-    # Create a dataloader for train dataset. 
+    # Create a dataloader for train dataset.
     # Notice we set `shuffle=True` for the training dataset.
     return DataLoader(self.train_dataset, batch_size = self.batch_size,
       shuffle = True, num_workers = self.num_workers)
@@ -52,8 +52,8 @@ class ReviewDataModule(pl.LightningDataModule):
 
 
 class SentimentClassifierSystem(pl.LightningModule):
-  """A Pytorch Lightning system to train a model to classify sentiment of 
-  product reviews. 
+  """A Pytorch Lightning system to train a model to classify sentiment of
+  product reviews.
 
   Arguments
   ---------
@@ -78,7 +78,7 @@ class SentimentClassifierSystem(pl.LightningModule):
       nn.Linear(self.config.system.model.width, 1)
     )
     return model
-  
+
   def configure_optimizers(self):
     optimizer = optim.Adam(self.parameters(), lr=self.config.system.optimizer.lr)
     return optimizer
@@ -93,7 +93,7 @@ class SentimentClassifierSystem(pl.LightningModule):
       shape: batch_size
     """
     embs, labels = batch['embedding'], batch['label']
-    
+
     # forward pass using the model
     logits = self.model(embs)
 
@@ -145,7 +145,7 @@ class SentimentClassifierSystem(pl.LightningModule):
 
 
 class RobustSentimentSystem(SentimentClassifierSystem):
-  """A Pytorch Lightning system to train a model to classify sentiment of 
+  """A Pytorch Lightning system to train a model to classify sentiment of
   product reviews using DRO (assuming group knowledge).
 
   Arguments
@@ -168,7 +168,7 @@ class RobustSentimentSystem(SentimentClassifierSystem):
     embs = batch['embedding']
     labels = batch['label']
     # `groups` is a tensor of 0s and 1s where 1 indicates the training
-    # example is in the English group. 
+    # example is in the English group.
     groups = batch['group']
 
     logits = self.model(embs)
@@ -179,27 +179,30 @@ class RobustSentimentSystem(SentimentClassifierSystem):
 
     # =================================
     # FILL ME OUT
-    # 
-    # Compute the DRO objective. The variable `loss` above 
+    #
+    # Compute the DRO objective. The variable `loss` above
     # is a torch.FloatTensor of the same length as the minibatch.
-    # 
-    # Write code to compute the average loss per group. Then 
-    # compute the maximum over the group averages. Overwrite the 
-    # `loss` variable with this value. This resulting loss is the 
+    #
+    # Write code to compute the average loss per group. Then
+    # compute the maximum over the group averages. Overwrite the
+    # `loss` variable with this value. This resulting loss is the
     # one we will optimize using SGD.
-    # 
+    #
     # Pseudocode:
     # --
     # loss0 = mean of terms in `loss` belonging to group 0
     # loss1 = mean of terms in `loss` belonging to group 1
     # loss = max(loss0, loss1)
-    # 
+    #
     # Types:
     # --
     # loss0: torch.Tensor (length = # of group 0 elements in batch)
     # loss1: torch.Tensor (length = # of group 1 elements in batch)
     # loss: torch.Tensor (single element)
     # =================================
+    loss0 = loss[groups == 0].mean()
+    loss1 = loss[groups == 1].mean()
+    loss = torch.maximum(loss0, loss1)
 
     with torch.no_grad():
       # Compute accuracy using the logits and labels

@@ -1,10 +1,10 @@
-"""Flow implementing "Distributionally Robust Neural Network For Group 
-Shifts: On the Importance of Regularization for Worst-Case Generalization". 
+"""Flow implementing "Distributionally Robust Neural Network For Group
+Shifts: On the Importance of Regularization for Worst-Case Generalization".
 See https://arxiv.org/pdf/1911.08731.pdf.
 """
 import os
 import torch
-import random 
+import random
 import numpy as np
 from pprint import pprint
 from os.path import join
@@ -20,16 +20,16 @@ from src.utils import load_config, to_json
 
 
 class DistRobustOpt(FlowSpec):
-  r"""A flow that implements Equation 4 on page 3 of the paper. 
+  r"""A flow that implements Equation 4 on page 3 of the paper.
 
-  We assume access to group labels, meaning whether an example is in 
-  English or Spanish (this should be quite easy to obtain). We do not 
-  assume access to this in test sets. Then, we minimize the maximum 
+  We assume access to group labels, meaning whether an example is in
+  English or Spanish (this should be quite easy to obtain). We do not
+  assume access to this in test sets. Then, we minimize the maximum
   group loss over all group.
   """
-  config_path = Parameter('config', 
+  config_path = Parameter('config',
     help = 'path to config file', default = join(CONFIG_DIR, 'dro.json'))
-  
+
   @step
   def start(self):
     r"""Start node.
@@ -39,11 +39,11 @@ class DistRobustOpt(FlowSpec):
     np.random.seed(42)
     torch.manual_seed(42)
 
-    self.next(self.load_system)
+    self.next(self.init_system)
 
   @step
   def init_system(self):
-    r"""Instantiates a data module, pytorch lightning module, 
+    r"""Instantiates a data module, pytorch lightning module,
     and lightning trainer instance.
     """
     config = load_config(self.config_path)
@@ -116,7 +116,7 @@ if __name__ == "__main__":
   the flow at the point of failure:
 
     `python dro_flow.py resume`
-  
+
   You can specify a run id as well.
   """
   flow = DistRobustOpt()

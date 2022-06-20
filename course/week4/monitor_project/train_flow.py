@@ -1,4 +1,4 @@
-"""This flow will train a neural network to perform sentiment classification 
+"""This flow will train a neural network to perform sentiment classification
 for Amazon reviews across several product categories.
 """
 
@@ -27,7 +27,7 @@ class TrainClassifier(FlowSpec):
   ---------
   config (str, default: ./configs/train.json): path to a configuration file
   """
-  config_path = Parameter('config', 
+  config_path = Parameter('config',
     help = 'path to config file', default = join(CONFIG_DIR, 'train.json'))
 
   @step
@@ -43,7 +43,7 @@ class TrainClassifier(FlowSpec):
 
   @step
   def init_system(self):
-    r"""Instantiates a data module, pytorch lightning module, 
+    r"""Instantiates a data module, pytorch lightning module,
     and lightning trainer instance.
     """
     # configuration files contain all hyperparameters
@@ -125,7 +125,7 @@ if __name__ == "__main__":
   the flow at the point of failure:
 
     `python train_flow.py resume`
-  
+
   You can specify a run id as well.
   """
   flow = TrainClassifier()

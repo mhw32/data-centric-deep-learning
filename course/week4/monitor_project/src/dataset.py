@@ -3,12 +3,12 @@ import numpy as np
 import pandas as pd
 from os.path import join
 from torch.utils.data import Dataset
-from collections import defaultdict
+from collections import Counter
 from src.paths import DATA_DIR
 
 
 class ProductReviewEmbeddings(Dataset):
-  r"""RoBERTa embeddings of customer reviews. Embeddings are precomputed 
+  r"""RoBERTa embeddings of customer reviews. Embeddings are precomputed
   and saved to disk. This class does not compute embeddings live.
 
   Argument
@@ -16,7 +16,7 @@ class ProductReviewEmbeddings(Dataset):
   lang (str): the language
     Options - en | es | mix
   split (str): the dataset portion
-    Options - train | dev | test | * 
+    Options - train | dev | test | *
   """
   def __init__(self, lang = 'en', split = 'train', weights = None):
     super().__init__()
@@ -30,28 +30,30 @@ class ProductReviewEmbeddings(Dataset):
     self.lang = lang
 
   def get_vocab(self):
-    vocab = defaultdict(lambda: 0)
     # ===============================
     # FILL ME OUT
-    # 
-    # Compute a map between word to count: number of times the 
+    #
+    # Compute a map between word to count: number of times the
     # word shows up in the dataset.
-    # 
+    #
     # Pseudocode:
     # --
     # loop through `self.data.review`
     #   split review into tokens
     #   update vocab with each token
-    # 
+    #
     # Type:
     # --
     # vocab: dict[str, int]
-    # 
+    #
     # Notes:
     # --
     # Convert tokens to lowercase when updating vocab.
     # ===============================
-    return dict(vocab)
+    vocab = Counter()
+    for review in self.data.review:
+        vocab.update(review.lower().split())
+    return vocab
 
   def get_labels(self):
     # return labels as a torch.LongTensor
@@ -76,13 +78,13 @@ class ProductReviewEmbeddings(Dataset):
 
 
 class ProductReviewStream(Dataset):
-  r"""Simulates a stream of customer reviews. Embeddings are precomputed 
+  r"""Simulates a stream of customer reviews. Embeddings are precomputed
   and saved to disk. This class does not compute embeddings live. No labels
   will be provided here.
 
   Argument:
   --------
-  index (int): stream index 
+  index (int): stream index
     Options - 1 to 9
   """
   def __init__(self, index):
@@ -93,24 +95,26 @@ class ProductReviewStream(Dataset):
 
   def get_vocab(self):
     # `defaultdict` can be a helpful utility
-    vocab = defaultdict(lambda: 0)
     # ===============================
     # FILL ME OUT
-    # 
-    # Copy your implementation of `get_vocab` from 
+    #
+    # Copy your implementation of `get_vocab` from
     # the `ProductReviewEmbeddings` class here.
-    # 
+    #
     # Pseudocode:
     # --
     # loop through `self.data.review`
     #   split review into tokens
     #   update vocab with each token
-    # 
+    #
     # Type:
     # --
     # vocab: dict[str, int]
     # ===============================
-    return dict(vocab)
+    vocab = Counter()
+    for review in self.data.review:
+        vocab.update(review.lower().split())
+    return vocab
 
   def __getitem__(self, index):
     output = {

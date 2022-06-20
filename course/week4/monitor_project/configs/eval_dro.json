@@ -1,6 +1,6 @@
 {
   "system": {
-    "ckpt_path": "./artifacts/ckpts/dro/epoch=9-step=12500.ckpt",
+    "ckpt_path": "./artifacts/ckpts/dro/epoch=19-step=25000.ckpt",
     "save_dir": "./artifacts/ckpts/eval_dro",
     "batch_size": 128,
     "num_workers": 4
