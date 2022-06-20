@@ -1,4 +1,4 @@
-"""Flow implementing "Just Train Twice: Improving Group Robustness without 
+"""Flow implementing "Just Train Twice: Improving Group Robustness without
 Training Group Information". See https://arxiv.org/pdf/2107.09044.pdf.
 """
 import os
@@ -21,16 +21,16 @@ from src.utils import load_config, to_json
 
 
 class JustTrainTwice(FlowSpec):
-  r"""A flow that implements Algorithm 1 on page 5 of the paper. 
+  r"""A flow that implements Algorithm 1 on page 5 of the paper.
 
-  We build a dataset E of training examples misclassified by the 
+  We build a dataset E of training examples misclassified by the
   trained model. Then, we retrain the model from scratch and upweight
-  the samples in E. We choose between multiple upweight parameters 
+  the samples in E. We choose between multiple upweight parameters
   to see which one results in the best performance.
   """
-  config_path = Parameter('config', 
+  config_path = Parameter('config',
     help = 'path to config file', default = join(CONFIG_DIR, 'jtt.json'))
-  
+
   @step
   def start(self):
     r"""Start node.
@@ -53,7 +53,7 @@ class JustTrainTwice(FlowSpec):
     self.config = config
     self.system = system
     self.trainer = trainer
-  
+
     self.next(self.build_weights)
 
   @step
@@ -61,33 +61,38 @@ class JustTrainTwice(FlowSpec):
     r"""Build map from example to weight."""
 
     ds = ProductReviewEmbeddings(lang='mix', split='train')
-    dl = DataLoader(ds, batch_size=self.config.system.optimizer.batch_size, 
+    dl = DataLoader(ds, batch_size=self.config.system.optimizer.batch_size,
       num_workers=self.config.system.optimizer.num_workers)
 
     weights = None
     # =============================
     # FILL ME OUT
-    # 
-    # Find out which examples in the training dataset the trained model gets 
+    #
+    # Find out which examples in the training dataset the trained model gets
     # incorrect. We expect the variable `weights` to be a `torch.FloatTensor`
-    # of the same size as `len(ds)`. The entries in `weights` are either 0 or 
-    # 1 where the entry is 1 if the model is incorrect. 
-    # 
+    # of the same size as `len(ds)`. The entries in `weights` are either 0 or
+    # 1 where the entry is 1 if the model is incorrect.
+    #
     # Pseudocode:
     # --
     # Get predicted probabilities with `self.trainer` on the DataLoader `dl`.
-    # Round probabilities to predictions, and compare to labels. 
-    # Element-wise comparison from predictions to labels to see if 
-    #   each element matches. 
+    # Round probabilities to predictions, and compare to labels.
+    # Element-wise comparison from predictions to labels to see if
+    #   each element matches.
     # Store the result into `weights`.
-    # 
+    #
     # Type:
     # --
     # weights: torch.FloatTensor (length: |ds|)
     # =============================
+    batch_preds = self.trainer.predict(model=self.system, dataloaders=dl)
+    preds = torch.concat(batch_preds).squeeze()
+    preds_rounded = torch.round(preds).long()
+    weights = (preds_rounded != ds.get_labels()).float()
+    assert weights.shape == (len(ds),)
     self.weights = weights
-    
-    # search through all of these lambda for upweighting 
+
+    # search through all of these lambda for upweighting
     self.lambd = [5, 10, 20 ,30, 40, 50, 100]
     self.next(self.retrain, foreach='lambd')
 
@@ -119,11 +124,11 @@ class JustTrainTwice(FlowSpec):
 
     en_ds = ProductReviewEmbeddings(lang='en', split='test')
     es_ds = ProductReviewEmbeddings(lang='es', split='test')
-    en_dl = DataLoader(en_ds, 
-      batch_size = config.system.optimizer.batch_size, 
+    en_dl = DataLoader(en_ds,
+      batch_size = config.system.optimizer.batch_size,
       num_workers = config.system.optimizer.num_workers)
-    es_dl = DataLoader(es_ds, 
-      batch_size = config.system.optimizer.batch_size, 
+    es_dl = DataLoader(es_ds,
+      batch_size = config.system.optimizer.batch_size,
       num_workers = config.system.optimizer.num_workers)
 
     trainer.test(system, dataloaders = en_dl)
@@ -132,21 +137,21 @@ class JustTrainTwice(FlowSpec):
     trainer.test(system, dataloaders = es_dl)
     es_results = system.test_results
 
-    acc_diff = None
     # =============================
     # FILL ME OUT
-    # 
-    # Compute the difference in accuracy between two groups: 
-    # english and spanish reviews. 
-    # 
+    #
+    # Compute the difference in accuracy between two groups:
+    # english and spanish reviews.
+    #
     # Pseudocode:
     # --
     # acc_diff = |english accuracy - spanish accuracy|
-    # 
+    #
     # Type:
     # --
     # acc_diff: float (> 0 and < 1)
     # =============================
+    acc_diff = abs(en_results['acc'] - es_results['acc'])
 
     print(f'[lambd={lambd}] Results on English reviews:')
     pprint(en_results)
@@ -166,21 +171,22 @@ class JustTrainTwice(FlowSpec):
     index = None
     # =============================
     # FILL ME OUT
-    # 
-    # Calculate the index with the lowest difference in accuracy. 
-    # 
+    #
+    # Calculate the index with the lowest difference in accuracy.
+    #
     # Pseudocode:
     # --
     # Loop through inputs. Each input has a `acc_diff` param.
-    # 
+    #
     # Type:
     # --
     # index: integer
-    # 
+    #
     # Notes:
-    # -- 
+    # --
     # Our solution is 2 lines of code.
     # =============================
+    index = np.argmin([i.acc_diff for i in inputs])
 
     en_results = inputs[index].en_results
     es_results = inputs[index].es_results
@@ -223,7 +229,7 @@ if __name__ == "__main__":
   the flow at the point of failure:
 
     `python jtt_flow.py resume`
-  
+
   You can specify a run id as well.
   """
   flow = JustTrainTwice()
