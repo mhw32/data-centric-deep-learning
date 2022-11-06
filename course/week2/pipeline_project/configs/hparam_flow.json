@@ -13,9 +13,5 @@
       "lr": 4e-3
     },
     "save_dir": "./artifacts/ckpts/hparam_flow"
-  },
-  "wandb": {
-    "project": "hparam_flow",
-    "entity": "<USERNAME>"
   }
 }

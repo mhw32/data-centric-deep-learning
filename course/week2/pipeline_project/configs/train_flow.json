@@ -12,9 +12,5 @@
       "lr": 4e-3
     },
     "save_dir": "./artifacts/ckpts/train_flow"
-  },
-  "wandb": {
-    "project": "train_flow",
-    "entity": "<USERNAME>"
   }
 }

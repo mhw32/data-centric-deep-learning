@@ -13,9 +13,5 @@
       "lr": 4e-3
     },
     "save_dir": "./artifacts/ckpts/regression_flow"
-  },
-  "wandb": {
-    "project": "regression_flow",
-    "entity": "<USERNAME>"
   }
 }

@@ -12,9 +12,5 @@
       "lr": 4e-3
     },
     "save_dir": "./artifacts/ckpts/integration_flow"
-  },
-  "wandb": {
-    "project": "integration_flow",
-    "entity": "<USERNAME>"
   }
 }

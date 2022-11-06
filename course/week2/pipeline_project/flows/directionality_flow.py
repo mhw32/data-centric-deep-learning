@@ -5,7 +5,6 @@ directionality test to measure model robustness.
 """
 
 import os
-import wandb
 import torch
 import random
 import numpy as np
@@ -17,7 +16,6 @@ from metaflow import FlowSpec, step, Parameter
 
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
-from pytorch_lightning.loggers import WandbLogger
 
 from src.system import MNISTDataModule, DigitClassifierSystem
 from src.tests.directionality import MNISTDirectionalityTest
@@ -45,8 +43,6 @@ class DigitClassifierFlow(FlowSpec):
     np.random.seed(42)
     torch.manual_seed(42)
 
-    wandb.init()  # start wandb run
-
     self.next(self.init_system)
 
   @step
@@ -67,17 +63,8 @@ class DigitClassifierFlow(FlowSpec):
       verbose = True,
     )
 
-    wandb_logger = WandbLogger(
-      project = config.wandb.project, 
-      offline = False,
-      entity = config.wandb.entity, 
-      name = 'mnist', 
-      save_dir = 'logs/wandb',
-      config = config)
-
     trainer = Trainer(
       max_epochs = config.system.optimizer.max_epochs,
-      logger = wandb_logger,
       callbacks = [checkpoint_callback])
 
     self.dm = dm
@@ -91,8 +78,6 @@ class DigitClassifierFlow(FlowSpec):
     """Calls `fit` on the trainer."""
 
     self.trainer.fit(self.system, self.dm)
-
-    wandb.finish()  # close wandb run
 
     self.next(self.offline_test)
 
