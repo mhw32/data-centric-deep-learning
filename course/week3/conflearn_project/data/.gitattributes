@@ -1,3 +1,6 @@
 dev.pt filter=lfs diff=lfs merge=lfs -text
 test.pt filter=lfs diff=lfs merge=lfs -text
 train.pt filter=lfs diff=lfs merge=lfs -text
+train.npy filter=lfs diff=lfs merge=lfs -text
+dev.npy filter=lfs diff=lfs merge=lfs -text
+test.npy filter=lfs diff=lfs merge=lfs -text
