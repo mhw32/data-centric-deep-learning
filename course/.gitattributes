@@ -1,0 +1,8 @@
+week4/monitor_project/data/stream/stream4.pt filter=lfs diff=lfs merge=lfs -text
+week4/monitor_project/data/stream/stream5.pt filter=lfs diff=lfs merge=lfs -text
+week4/monitor_project/data/stream/stream6.pt filter=lfs diff=lfs merge=lfs -text
+week4/monitor_project/data/stream/stream7.pt filter=lfs diff=lfs merge=lfs -text
+week4/monitor_project/data/stream/stream8.pt filter=lfs diff=lfs merge=lfs -text
+week4/monitor_project/data/stream/stream1.pt filter=lfs diff=lfs merge=lfs -text
+week4/monitor_project/data/stream/stream2.pt filter=lfs diff=lfs merge=lfs -text
+week4/monitor_project/data/stream/stream3.pt filter=lfs diff=lfs merge=lfs -text
