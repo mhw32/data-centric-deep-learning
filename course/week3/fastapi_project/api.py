@@ -19,7 +19,7 @@ from torchvision import transforms
 from src.system import DigitClassifierSystem
 
 # this is a special path for the deployed model
-MODEL_PATH: str = join(Path(__file__).parent, "ckpts/deploy.ckpt")
+MODEL_PATH: str = join(Path(__file__).parent, "/workspace/data-centric-deep-learning/course/week2/pipeline_project/artifacts/ckpts/train_flow/epoch=6-step=10500.ckpt")
 
 
 class InferenceInput(BaseModel):
@@ -110,9 +110,10 @@ def predict(request: Request, body: InferenceInput):
   # you are only passing in one element, it must be of shape 1x1x28x28.
   im = im_transforms(im)
   im = im.unsqueeze(0)
+  im = im.view(im.size(0), -1)  # flatten the image
 
   with torch.no_grad():
-    logits = None
+    logits = system(im)
 
     # ================================
     # FILL ME OUT
@@ -139,7 +140,7 @@ def predict(request: Request, body: InferenceInput):
     label = torch.argmax(logits, dim=1)  # shape (1)
     label = label.item()                 # tensor -> integer
 
-    probs = None
+    probs = F.sigmoid(logits)
     # ================================
     # FILL ME OUT
     # 
