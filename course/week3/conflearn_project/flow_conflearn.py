@@ -187,8 +187,9 @@ class TrainIdentifyReview(FlowSpec):
       trainer = Trainer(max_epochs=10)
       trainer.fit(system, dl_train)
 
-      probs = trainer.test(system, dataloaders=dl_test)
-      probs_ = torch.cat(probs_).squeeze(1).numpy()
+      probs = trainer.predict(system, dataloaders=dl_test)
+
+      probs_ = probs.squeeze(1).numpy()
 
       assert probs_ is not None, "`probs_` is not defined."
       probs[test_index] = probs_
