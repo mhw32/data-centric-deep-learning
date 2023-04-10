@@ -187,12 +187,11 @@ class TrainIdentifyReview(FlowSpec):
       trainer = Trainer(max_epochs=10)
       trainer.fit(system, dl_train)
 
-      probs = trainer.predict(system, dataloaders=dl_test)
+      probs_aux = trainer.predict(system, dataloaders=dl_test)
+      
+      probs_ = torch.cat(probs_aux).squeeze(1).numpy()
 
-      probs_ = probs.squeeze(1).numpy()
-
-      assert probs_ is not None, "`probs_` is not defined."
-      probs[test_index] = probs_
+      probs[list(test_index)] = probs_
 
     # create a single dataframe with all input features
     all_df = pd.concat([
