@@ -332,7 +332,9 @@ class TrainIdentifyReview(FlowSpec):
     # dm.dev_dataset.data = dev slice of self.all_df
     # dm.test_dataset.data = test slice of self.all_df
     # # ====================================
-
+    dm.train_dataset.data = self.all_df[:train_size]
+    dm.dev_dataset.data = self.all_df[train_size:dev_size]
+    dm.test_dataset.data = self.all_df[dev_size:]
     # start from scratch
     system = SentimentClassifierSystem(self.config)
     trainer = Trainer(
