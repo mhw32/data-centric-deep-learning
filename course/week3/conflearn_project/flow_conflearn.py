@@ -16,6 +16,7 @@ from metaflow import FlowSpec, step, Parameter
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from cleanlab.filter import find_label_issues
+from cleanlab.dataset import health_summary
 from sklearn.model_selection import KFold
 
 from src.system import ReviewDataModule, SentimentClassifierSystem
@@ -241,6 +242,7 @@ class TrainIdentifyReview(FlowSpec):
     # save this to class
     self.issues = ranked_label_issues
     print(f'{len(ranked_label_issues)} label issues found.')
+    print(health_summary(np.asarray(self.all_df.label), prob))
 
     # overwrite label for all the entries in all_df
     for index in self.issues:
@@ -333,12 +335,14 @@ class TrainIdentifyReview(FlowSpec):
     # dm.test_dataset.data = test slice of self.all_df
     # # ====================================
     dm.train_dataset.data = self.all_df[:train_size]
-    dm.dev_dataset.data = self.all_df[train_size:dev_size]
-    dm.test_dataset.data = self.all_df[dev_size:]
+    dm.dev_dataset.data = self.all_df[train_size:train_size+dev_size]
+    dm.test_dataset.data = self.all_df[train_size+dev_size:]
     # start from scratch
     system = SentimentClassifierSystem(self.config)
+
     trainer = Trainer(
-      max_epochs = self.config.train.optimizer.max_epochs)
+      max_epochs = self.config.train.optimizer.max_epochs
+    )
 
     trainer.fit(system, dm)
     trainer.test(system, dm, ckpt_path = 'best')
@@ -374,7 +378,7 @@ if __name__ == "__main__":
   If you face a bug and the flow fails, you can continue
   the flow at the point of failure:
 
-    `python flow_conflearn.py resume`
+    `python flow_conflearn.py --no-pylint resume`
   
   You can specify a run id as well.
   """
