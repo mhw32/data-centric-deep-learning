@@ -11,4 +11,6 @@ RUN sudo apt-get update \
 # Install python version
 RUN pyenv install 3.8.13
 RUN pyenv local 3.8.13
-RUN pip install -r requirements.txt
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
