@@ -1,7 +1,6 @@
 image:
   file: .gitpod.Dockerfile
 tasks:
-  - before: pip3 install -r requirements.txt
     command: redis-server --daemonize yes && pyenv shell 3.8.13 && echo "Welcome to your Workspace"
 vscode:
   extensions:
