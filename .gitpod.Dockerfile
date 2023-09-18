@@ -8,6 +8,7 @@ RUN sudo apt-get update \
     redis-server \
     && sudo rm -rf /var/lib/apt/lists/*
 
+RUN pyenv install 3.8.13 && pyenv local 3.8.13
 RUN pip3 install \
     celery==5.2.2 \
     dotmap==1.3.30 \
