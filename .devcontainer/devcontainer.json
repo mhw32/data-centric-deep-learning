@@ -14,8 +14,12 @@
       ]
     }
   },
-  "forwardPorts": [8888],
+  "forwardPorts": [8000, 8888],
   "portsAttributes": {
+    "8000": {
+      "label": "Dev Application",
+      "onAutoForward": "openBrowser"
+    },
     "8888": {
       "label": "Jupyter Notebook",
       "onAutoForward": "openBrowser"
