@@ -16,6 +16,7 @@ We expect students to be proficient in Python programming, and familiar with dee
 
 ## Setup
 
-These projects are best done through Gitpod, which provides 50 hours of use per month for free. We fully expect this to be more than sufficient to complete the projects. Setup is described thoroughly week 0 of the course. In short, you will need to fork this repository and launch a new Gitpod workspace using the forked repo url. All data will be provided within this file, potentially as large files. Finally, you may need to create an account on Label-Studio for weeks 3 and 4, although this can be done through the project. 
+These projects are best done through Github codespaces. 
 
-We do not expect these projects to be run locally. While they can be, we do not plan on supporting this option.
+1. Fork this repo (leave box checked for "Copy the main branch only")
+2. Follow this video for the rest.
