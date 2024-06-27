@@ -6,7 +6,6 @@ on the MNIST dataset to performance classification.
 import os
 import torch
 import random
-import shutil
 import numpy as np
 from os.path import join
 from pathlib import Path

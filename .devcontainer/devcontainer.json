@@ -1,0 +1,24 @@
+{
+  "build": { 
+  "context": "..",
+  "dockerfile": "Dockerfile" 
+},
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+      },
+      "extensions": [
+        "ms-toolsai.jupyter"
+      ]
+    }
+  },
+  "forwardPorts": [8888],
+  "portsAttributes": {
+    "8888": {
+      "label": "Jupyter Notebook",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}
