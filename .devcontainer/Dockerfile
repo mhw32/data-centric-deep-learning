@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
     redis-server \
+    libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory in the container
