@@ -8,7 +8,6 @@ from os.path import join
 from pprint import pprint
 
 from metaflow import FlowSpec, step, Parameter
-
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
@@ -58,7 +57,7 @@ class TrainClassifier(FlowSpec):
 
     # a callback to save best model weights
     checkpoint_callback = ModelCheckpoint(
-      dirpath = config.system.save_dir,
+      dirpath = config.save_dir,
       monitor = 'dev_loss',
       mode = 'min',    # look for lowest `dev_loss`
       save_top_k = 1,  # save top 1 checkpoints
@@ -67,7 +66,7 @@ class TrainClassifier(FlowSpec):
 
     trainer = Trainer(
       logger = TensorBoardLogger(save_dir=LOG_DIR),
-      max_epochs = config.system.optimizer.max_epochs,
+      max_epochs = config.optimizer.max_epochs,
       callbacks = [checkpoint_callback])
 
     # when we save these objects to a `step`, they will be available

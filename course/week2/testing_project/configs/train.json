@@ -6,5 +6,5 @@
     "batch_size": 32,
     "lr": 4e-3
   },
-  "save_dir": "./ckpts/train_flow"
+  "save_dir": "./scratch/train_flow"
 }

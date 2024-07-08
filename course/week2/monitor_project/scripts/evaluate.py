@@ -50,7 +50,7 @@ class EvalClassifier(FlowSpec):
     r"""Load pretrain system on new training data."""
     config = load_config(self.config_path)
 
-    self.system = SentimentClassifierSystem.load_from_checkpoint(config.system.ckpt_path)
+    self.system = SentimentClassifierSystem.load_from_checkpoint(config.model)
     self.trainer = Trainer(logger = TensorBoardLogger(save_dir=LOG_DIR))
   
     self.next(self.evaluate)
@@ -63,10 +63,10 @@ class EvalClassifier(FlowSpec):
     en_ds = ProductReviewEmbeddings(lang='en', split='test')
     es_ds = ProductReviewEmbeddings(lang='es', split='test')
 
-    en_dl = DataLoader(en_ds, batch_size = config.system.batch_size, 
-      num_workers = config.system.num_workers)
-    es_dl = DataLoader(es_ds, batch_size = config.system.batch_size, 
-      num_workers = config.system.num_workers)
+    en_dl = DataLoader(en_ds, batch_size = config.batch_size, 
+      num_workers = config.num_workers)
+    es_dl = DataLoader(es_ds, batch_size = config.batch_size, 
+      num_workers = config.num_workers)
 
     self.trainer.test(self.system, dataloaders = en_dl)
     en_results = self.system.test_results

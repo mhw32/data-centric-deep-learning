@@ -1,8 +1,5 @@
 {
-  "system": {
-    "ckpt_path": "./artifacts/ckpts/update/epoch=9-step=12500.ckpt",
-    "save_dir": "./artifacts/ckpts/eval",
-    "batch_size": 128,
-    "num_workers": 4
-  }
+  "model": "model.ckpt",
+  "batch_size": 128,
+  "num_workers": 4
 }

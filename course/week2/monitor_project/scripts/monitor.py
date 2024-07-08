@@ -12,8 +12,8 @@ from monitor.paths import LOG_DIR
 
 def main(args):
   rs = np.random.RandomState(42)
-  system = SentimentClassifierSystem.load_from_checkpoint(args.ckpt)
-  tr_ds = ProductReviewEmbeddings(lang=system.config.system.data.lang, split='train')
+  system = SentimentClassifierSystem.load_from_checkpoint(args.checkpoint)
+  tr_ds = ProductReviewEmbeddings(lang=system.config.data.lang, split='train')
   tr_dl = DataLoader(tr_ds, batch_size=128, shuffle=False, num_workers=4)
   tr_vocab = tr_ds.get_vocab()
 
@@ -73,6 +73,6 @@ def create_sample(probs, labels, size, rs):
 if __name__ == "__main__":
   import argparse
   parser = argparse.ArgumentParser()
-  parser.add_argument('ckpt', type=str, help='path to checkpoint file')
+  parser.add_argument('checkpoint', type=str, help='path to checkpoint file')
   args = parser.parse_args()
   main(args)
