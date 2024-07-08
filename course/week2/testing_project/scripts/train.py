@@ -15,7 +15,7 @@ from testing.utils import load_config, to_json
 from testing.paths import LOG_DIR, CONFIG_DIR
 
 
-class DigitClassifierFlow(FlowSpec):
+class TrainFlow(FlowSpec):
   r"""A flow that trains a image classifier to recognize handwritten
   digit, such as those in the MNIST dataset.
 
@@ -106,20 +106,20 @@ class DigitClassifierFlow(FlowSpec):
 
 if __name__ == "__main__":
   """
-  To validate this flow, run `python train_flow.py`. To list
-  this flow, run `python train_flow.py show`. To execute
-  this flow, run `python train_flow.py run`.
+  To validate this flow, run `python train.py`. To list
+  this flow, run `python train.py show`. To execute
+  this flow, run `python train.py run`.
 
   You may get PyLint errors from `numpy.random`. If so,
   try adding the flag:
 
-    `python train_flow.py --no-pylint run`
+    `python train.py --no-pylint run`
 
   If you face a bug and the flow fails, you can continue
   the flow at the point of failure:
 
-    `python train_flow.py resume`
+    `python train.py resume`
   
   You can specify a run id as well.
   """
-  flow = DigitClassifierFlow()
+  flow = TrainFlow()

@@ -1,5 +1,5 @@
 {
-  "data": "./data/mnist",
+  "data": "mnist",
   "model": "linear",
   "optimizer": {
     "max_epochs": 10,

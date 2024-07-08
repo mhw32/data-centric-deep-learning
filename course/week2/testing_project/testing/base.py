@@ -1,11 +1,4 @@
-from os.path import join
-from pathlib import Path
-
-
 class BaseTest:
-
-  # directory for test data
-  root = join(Path(__file__).resolve().parent, 'images')
 
   def get_dataloader(self):
     """To be overloaded by a child class.

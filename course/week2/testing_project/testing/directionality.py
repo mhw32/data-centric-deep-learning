@@ -45,10 +45,11 @@ class MNISTDirectionalityTest(BaseTest):
 
   Arguments
   ---------
+  test_dir (str): Path to test directory
   num_aug (int, default=5): number of copies of the image to apply
     random augmentations to.
   """
-  def __init__(self, num_aug = 5):
+  def __init__(self, test_dir: str, num_aug: int = 5):
     super().__init__()
     self.num_aug = num_aug
 
@@ -60,7 +61,7 @@ class MNISTDirectionalityTest(BaseTest):
     assert len(dataset) == 100, f"Unexpected dataset size: {len(dataset)}"
     self.dataset = dataset
 
-  def load_integration_examples(self):
+  def load_integration_examples(self, test_dir: str):
     r"""Returns paths for handwritten digits from the integration test. 
     We do not need the labels.
 
@@ -69,7 +70,6 @@ class MNISTDirectionalityTest(BaseTest):
     paths (list[str]): list of image paths belonging to integration
       examples.
     """
-    test_dir = join(self.root, 'integration')
     paths = glob(join(test_dir, 'digits-processed', '*.png'))
     return paths
 

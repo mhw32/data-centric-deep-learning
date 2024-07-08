@@ -1,14 +1,15 @@
-r"""A PyTorch Lightning system for training MNIST."""
-
 import os
+from os.path import join
+
 import torch
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
 from torch.utils.data import Subset, DataLoader
-
 import pytorch_lightning as pl
 from torchvision import datasets, transforms
+
+from .paths import DATA_DIR
 
 
 class MNISTDataModule(pl.LightningDataModule):
@@ -21,13 +22,13 @@ class MNISTDataModule(pl.LightningDataModule):
     # using `torchvision.datasets`. See
     # https://pytorch.org/vision/stable/datasets.html 
     train_dataset = datasets.MNIST(
-      config.data,
+      join(DATA_DIR, config.data),
       download = True,
       train = True,
       transform = transforms.ToTensor())
 
     test_dataset = datasets.MNIST(
-      config.data,
+      join(DATA_DIR, config.data),
       download = True,
       train = False,
       transform = transforms.ToTensor())

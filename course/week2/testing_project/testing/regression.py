@@ -129,11 +129,14 @@ class MNISTRegressionTest(BaseTest):
   """A regression test includes a set of 100 known examples that 
   previous models struggled with. For this project, we include  
   examples that a linear regression model on MNIST misclassified. 
+
+  Arguments
+  ---------
+  test_dir (str): Path to test directory
   """
-  def __init__(self):
+  def __init__(self, test_dir: str):
     super().__init__()
 
-    test_dir = join(self.root, 'regression')
     data = torch.load(join(test_dir, 'test-data.pt'))
     images = data['images']
     labels = data['labels']

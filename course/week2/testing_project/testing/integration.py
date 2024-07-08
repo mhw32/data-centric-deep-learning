@@ -19,16 +19,18 @@ class MNISTIntegrationTest(BaseTest):
   must pass before being deployed in practice. For this project,
   we include a set of 10 handwritten digits (provided by you!) that
   the model must correctly classify.
-  """
 
-  def __init__(self):
+  Arguments
+  ---------
+  test_dir (str): Path to test directory
+  """
+  def __init__(self, test_dir: str):
     super().__init__()
     paths, labels = [], []
 
     # Store the paths of all processed images in the `paths` list.
     # Use the `labels.csv` to fill out the `labels` list with the 
     # corresponding labels for each path in `paths`.
-    test_dir = join(self.root, 'integration')
     labels_df = pd.read_csv(join(test_dir, 'labels.csv'))
     labels_dict = dict(zip(labels_df.path, labels_df.label))
     paths = glob(join(test_dir, 'digits-processed', '*.png'))
