@@ -21,13 +21,13 @@ class MNISTDataModule(pl.LightningDataModule):
     # using `torchvision.datasets`. See
     # https://pytorch.org/vision/stable/datasets.html 
     train_dataset = datasets.MNIST(
-      config.system.data.root,
+      config.data,
       download = True,
       train = True,
       transform = transforms.ToTensor())
 
     test_dataset = datasets.MNIST(
-      config.system.data.root,
+      config.data,
       download = True,
       train = False,
       transform = transforms.ToTensor())
@@ -57,7 +57,7 @@ class MNISTDataModule(pl.LightningDataModule):
     self.train_dataset = train_dataset
     self.dev_dataset = dev_dataset
     self.test_dataset = test_dataset
-    self.batch_size = config.system.optimizer.batch_size
+    self.batch_size = config.optimizer.batch_size
 
   def train_dataloader(self):
     # Create a dataloader for train dataset. 
@@ -89,7 +89,7 @@ class DigitClassifierSystem(pl.LightningModule):
     self.config = config
 
     # make directory to store data
-    os.makedirs(config.system.data.root, exist_ok = True)
+    os.makedirs(config.data, exist_ok = True)
 
     # load model
     self.model = self.get_model()
@@ -98,18 +98,18 @@ class DigitClassifierSystem(pl.LightningModule):
     self.test_results = {}
 
   def get_model(self):
-    if self.config.system.model.name == 'linear':
+    if self.config.model == 'linear':
       model = nn.Linear(784, 10)
 
-    elif self.config.system.model.name == 'mlp':
+    elif self.config.model == 'mlp':
       model = nn.Sequential(
-        nn.Linear(784, self.config.system.model.width),
+        nn.Linear(784, self.config.model.width),
         nn.ReLU(),
-        nn.Linear(self.config.system.model.width, 10)
+        nn.Linear(self.config.model.width, 10)
       )
 
     else:
-      raise Exception(f"Model {self.config.system.model.name} not supported.")
+      raise Exception(f"Model {self.config.model} not supported.")
 
     return model
 
@@ -119,7 +119,7 @@ class DigitClassifierSystem(pl.LightningModule):
     return logits
   
   def configure_optimizers(self):
-    optimizer = optim.Adam(self.parameters(), lr=self.config.system.optimizer.lr)
+    optimizer = optim.Adam(self.parameters(), lr=self.config.optimizer.lr)
     return optimizer
 
   def _common_step(self, batch, batch_idx):

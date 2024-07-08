@@ -12,6 +12,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 
 from testing.system import MNISTDataModule, DigitClassifierSystem
 from testing.utils import load_config, to_json
+from testing.paths import LOG_DIR, CONFIG_DIR
 
 
 class DigitClassifierFlow(FlowSpec):
@@ -22,8 +23,7 @@ class DigitClassifierFlow(FlowSpec):
   ---------
   config (str, default: ./config.py): path to a configuration file
   """
-  config_path = Parameter('config', 
-    help = 'path to config file', default='./configs/train_flow.json')
+  config_path = Parameter('config', help = 'path to config file', default = join(CONFIG_DIR, 'train.json'))
 
   @step
   def start(self):
@@ -52,7 +52,7 @@ class DigitClassifierFlow(FlowSpec):
 
     # a callback to save best model weights
     checkpoint_callback = ModelCheckpoint(
-      dirpath = config.system.save_dir,
+      dirpath = config.save_dir,
       monitor = 'dev_loss',
       mode = 'min',    # look for lowest `dev_loss`
       save_top_k = 1,  # save top 1 checkpoints
@@ -60,10 +60,10 @@ class DigitClassifierFlow(FlowSpec):
     )
 
     trainer = Trainer(
-      max_epochs = config.system.optimizer.max_epochs,
+      max_epochs = config.optimizer.max_epochs,
       callbacks = [checkpoint_callback])
 
-    # When we save these objects to a `step`, they will be available
+    # when we save these objects to a `step`, they will be available
     # for use in the next step, through not steps after.
     self.dm = dm
     self.system = system
@@ -92,9 +92,7 @@ class DigitClassifierFlow(FlowSpec):
     # print results to command line
     pprint(results)
 
-    log_file = join(Path(__file__).resolve().parent.parent, 
-      f'logs/train_flow', 'offline-test-results.json')
-
+    log_file = join(LOG_DIR, 'offline-test-results.json')
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
     to_json(results, log_file)  # save to disk
 

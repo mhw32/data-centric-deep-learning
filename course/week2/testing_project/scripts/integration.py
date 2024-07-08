@@ -13,15 +13,13 @@ from pathlib import Path
 from pprint import pprint
 
 from metaflow import FlowSpec, step, Parameter
-from pytorch_lightning import Trainer
-from pytorch_lightning.callbacks import ModelCheckpoint
-
 from testing.system import MNISTDataModule, DigitClassifierSystem
 from testing.integration import MNISTIntegrationTest
 from testing.utils import load_config, to_json
+from testing.paths import LOG_DIR, CONFIG_DIR
 
 
-class DigitClassifierFlow(FlowSpec):
+class IntegrationTest(FlowSpec):
   r"""A flow that trains a image classifier to recognize handwritten
   digit, such as those in the MNIST dataset. Includes an integration 
   test on handwritten digits provided by you!
@@ -30,8 +28,7 @@ class DigitClassifierFlow(FlowSpec):
   ---------
   config (str, default: ./config.py): path to a configuration file
   """
-  config_path = Parameter('config', 
-    help = 'path to config file', default='./configs/integration_flow.json')
+  config_path = Parameter('config', help='path to config file', default = join(CONFIG_DIR, 'test.json'))
 
   @step
   def start(self):
@@ -51,32 +48,8 @@ class DigitClassifierFlow(FlowSpec):
     """
     config = load_config(self.config_path)
 
-    dm = MNISTDataModule(config)
-    system = DigitClassifierSystem(config)
-
-    checkpoint_callback = ModelCheckpoint(
-      dirpath = config.system.save_dir,
-      monitor = 'dev_loss',
-      mode = 'min',    # look for lowest `dev_loss`
-      save_top_k = 1,  # save top 1 checkpoints
-      verbose = True,
-    )
-
-    trainer = Trainer(
-      max_epochs = config.system.optimizer.max_epochs,
-      callbacks = [checkpoint_callback])
-
-    self.dm = dm
-    self.system = system
-    self.trainer = trainer
-
-    self.next(self.train_model)
-
-  @step
-  def train_model(self):
-    """Calls `fit` on the trainer."""
-
-    self.trainer.fit(self.system, self.dm)
+    self.dm = MNISTDataModule(config)
+    self.system = DigitClassifierSystem.load_from_checkpoint(config.model)
 
     self.next(self.offline_test)
 
@@ -91,9 +64,7 @@ class DigitClassifierFlow(FlowSpec):
     # print results to command line
     pprint(results)
 
-    log_file = join(Path(__file__).resolve().parent.parent, 
-      f'logs/integration_flow', 'offline-test-results.json')
-
+    log_file = join(LOG_DIR, 'offline-test-results.json')
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
     to_json(results, log_file)  # save to disk
 
@@ -109,8 +80,7 @@ class DigitClassifierFlow(FlowSpec):
     results = self.system.test_results
     pprint(results)
 
-    log_file = join(Path(__file__).resolve().parent.parent, 
-      f'logs/integration_flow', 'integration-test-results.json')
+    log_file = join(LOG_DIR, 'integration-test-results.json')
 
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
     to_json(results, log_file)
@@ -142,4 +112,4 @@ if __name__ == "__main__":
   
   You can specify a run id as well.
   """
-  flow = DigitClassifierFlow()
+  flow = IntegrationTest()

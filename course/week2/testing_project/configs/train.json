@@ -1,16 +1,10 @@
 {
-  "system": {
-    "data": {
-      "root": "./artifacts/data/mnist"
-    },
-    "model": {
-      "name": "linear"
-    },
-    "optimizer": {
-      "max_epochs": 10,
-      "batch_size": 32,
-      "lr": 4e-3
-    },
-    "save_dir": "./artifacts/ckpts/train_flow"
-  }
+  "data": "./data/mnist",
+  "model": "linear",
+  "optimizer": {
+    "max_epochs": 10,
+    "batch_size": 32,
+    "lr": 4e-3
+  },
+  "save_dir": "./ckpts/train_flow"
 }
