@@ -54,7 +54,7 @@ class MNISTDirectionalityTest(BaseTest):
     self.num_aug = num_aug
 
     # we will reuse the same examples from the integration test
-    base_paths = self.load_integration_examples()
+    base_paths = self.load_integration_examples(test_dir)
     images_raw, images_transformed = self.create_directionality_tuples(base_paths)
 
     dataset = TensorDataset(images_raw, images_transformed)
@@ -166,6 +166,7 @@ class MNISTDirectionalityTest(BaseTest):
       # --
       # batch_metric: float (not torch.Tensor!)
       #   Metric computed on a minibatch
+      pass  # remove me
       # ================================
       metric.append(batch_metric)
       pbar.update()
