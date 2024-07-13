@@ -91,9 +91,3 @@ class MNISTIntegrationDataset(Dataset):
 
   def __len__(self):
     return len(self.paths)
-
-
-if __name__ == "__main__":
-  dataset = MNISTIntegrationTest()
-  num_examples = len(dataset.paths)
-  print(f'# of examples: {num_examples}')

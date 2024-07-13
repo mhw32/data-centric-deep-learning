@@ -14,11 +14,12 @@ class that we can incorporate into our flow pipeline.
 from os.path import join
 from tqdm import tqdm
 import numpy as np
+
 import torch
+import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
 
 from .base import BaseTest
-from .system import DigitClassifierSystem, MNISTDataModule
 
 
 @torch.no_grad()
@@ -98,6 +99,7 @@ def build_regression_test(system, loader):
     # batch_is_correct: List[int] (not a torch.Tensor!)
     #   List of integers - 1 if the model got that element correct 
     #                    - 0 if the model got that element incorrect
+    pass # remove me
     # ================================
     losses.extend(batch_loss)
     is_correct.extend(batch_is_correct)
@@ -154,26 +156,3 @@ class MNISTRegressionTest(BaseTest):
     # Pass the dataloader to the trainer and call `test`.
     # Our solution is one line of code
     trainer.test(system, dataloaders = loader)
-
-
-if __name__ == "__main__":
-  # Given the checkpoint file for a trained system, build a regression
-  # file and save it to disk.
-  import os
-  import argparse
-  parser = argparse.ArgumentParser()
-  parser.add_argument('ckpt', type=str, help='path to trained checkpoint file')
-  args = parser.parse_args()
-
-  system = DigitClassifierSystem.load_from_checkpoint(args.ckpt)
-  dm = MNISTDataModule(system.config)
-  loader = dm.val_dataloader()
-
-  images, labels = build_regression_test(system, loader)
-
-  cur_dir = os.path.dirname(__file__)
-  save_path = join(cur_dir, 'images/regression/test-data.pt')
-  os.makedirs(os.path.dirname(save_path), exist_ok=True)
-  torch.save({'images': images, 'labels': labels}, save_path)
-
-  print(f'Saved to {save_path}.')

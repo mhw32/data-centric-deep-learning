@@ -79,24 +79,26 @@ class TestFlow(FlowSpec):
     - If `regression`, then computes accuracy comparing a linear and a mlp 
     - If `directionality`, then compute agreement between a perturbed & a non-perturbed image
     """
+    trainer = Trainer()
+
     if self.test_type == "offline": 
-      Trainer().test(self.system, self.dm, ckpt_path = self.checkpoint_path)
+      trainer.test(self.system, self.dm, ckpt_path = self.checkpoint_path)
       results = self.system.test_results
       log_name = 'offline-test-results.json'
     elif self.test_type == "integration":
       test_dir = join(self.image_dir, "integration")
-      MNISTIntegrationTest(test_dir).test(self.trainer, self.system)
+      MNISTIntegrationTest(test_dir).test(trainer, self.system)
       results = self.system.test_results
       log_name = 'integration-test-results.json'
     elif self.test_type == "regression":
       test_dir = join(self.image_dir, "regression")
-      MNISTRegressionTest(test_dir).test(self.trainer, self.system)
+      MNISTRegressionTest(test_dir).test(trainer, self.system)
       results = self.system.test_results
       log_name = 'regression-test-results.json'
     elif self.test_type == "directionality":
       # directionality test uses integration examples
       test_dir = join(self.image_dir, "integration")
-      MNISTDirectionalityTest(test_dir).test(self.trainer, self.system)
+      MNISTDirectionalityTest(test_dir).test(trainer, self.system)
       results = self.system.test_results
       log_name = 'directionality-test-results.json'
     else:
