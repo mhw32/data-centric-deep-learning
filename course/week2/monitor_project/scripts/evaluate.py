@@ -15,7 +15,7 @@ from pytorch_lightning.loggers import TensorBoardLogger
 from monitor.systems import SentimentClassifierSystem
 from monitor.dataset import ProductReviewEmbeddings
 from monitor.utils import load_config, to_json
-from monitor.paths import LOG_DIR, CONFIG_DIR
+from monitor.paths import LOG_DIR, CONFIG_DIR, CHECKPOINT_DIR
 
 
 class EvalClassifier(FlowSpec):
@@ -31,7 +31,7 @@ class EvalClassifier(FlowSpec):
   config_path = Parameter(
     'config', 
     help = 'path to config file', 
-    default = join(CONFIG_DIR, 'eval.json'),
+    default = join(CONFIG_DIR, 'test.json'),
   )
   
   @step
@@ -50,7 +50,7 @@ class EvalClassifier(FlowSpec):
     r"""Load pretrain system on new training data."""
     config = load_config(self.config_path)
 
-    self.system = SentimentClassifierSystem.load_from_checkpoint(config.model)
+    self.system = SentimentClassifierSystem.load_from_checkpoint(join(CHECKPOINT_DIR, config.model))
     self.trainer = Trainer(logger = TensorBoardLogger(save_dir=LOG_DIR))
   
     self.next(self.evaluate)

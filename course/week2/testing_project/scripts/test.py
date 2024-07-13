@@ -14,7 +14,7 @@ from testing.integration import MNISTIntegrationTest
 from testing.regression import MNISTRegressionTest
 from testing.directionality import MNISTDirectionalityTest
 from testing.utils import load_config, to_json
-from testing.paths import CONFIG_DIR, LOG_DIR, IMAGE_DIR
+from testing.paths import CONFIG_DIR, LOG_DIR, IMAGE_DIR, CHECKPOINT_DIR
 
 
 class TestFlow(FlowSpec):
@@ -36,8 +36,7 @@ class TestFlow(FlowSpec):
   test_type = Parameter(
     'test', 
     help='test type to run', 
-    default = 'offline', 
-    choices = ['offline', 'integration', 'regression', 'directionality'], 
+    default = 'offline', # integration | regression | directionality
     required = True,
   )
   image_dir = Parameter(
@@ -65,9 +64,9 @@ class TestFlow(FlowSpec):
     config = load_config(self.config_path)
 
     self.dm = MNISTDataModule(config)
-    self.system = DigitClassifierSystem.load_from_checkpoint(config.model)
+    self.system = DigitClassifierSystem.load_from_checkpoint(join(CHECKPOINT_DIR, config.model))
 
-    self.next(self.offline_test)
+    self.next(self.test)
 
   @step
   def test(self):

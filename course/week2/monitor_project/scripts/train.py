@@ -98,7 +98,7 @@ class TrainClassifier(FlowSpec):
     # print results to command line
     pprint(results)
 
-    log_file = join(LOG_DIR, 'train_flow', 'results.json')
+    log_file = join(LOG_DIR, 'train', 'results.json')
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
     to_json(results, log_file)  # save to disk
 
@@ -112,19 +112,19 @@ class TrainClassifier(FlowSpec):
 
 if __name__ == "__main__":
   """
-  To validate this flow, run `python train_flow.py`. To list
-  this flow, run `python train_flow.py show`. To execute
-  this flow, run `python train_flow.py run`.
+  To validate this flow, run `python train.py`. To list
+  this flow, run `python train.py show`. To execute
+  this flow, run `python train.py run`.
 
   You may get PyLint errors from `numpy.random`. If so,
   try adding the flag:
 
-    `python train_flow.py --no-pylint run`
+    `python train.py --no-pylint run`
 
   If you face a bug and the flow fails, you can continue
   the flow at the point of failure:
 
-    `python train_flow.py resume`
+    `python train.py resume`
   
   You can specify a run id as well.
   """
