@@ -25,6 +25,7 @@ def get_ks_score(tr_probs, te_probs):
   # te_probs: torch.Tensor
   #   predicted probabilities from test test
   # score: float - between 0 and 1
+  pass  # remove me
   # ============================
   return score
 
@@ -67,6 +68,7 @@ def get_hist_score(tr_probs, te_probs, bins=10):
   # 
   # Read the documentation for `np.histogram` carefully, in
   # particular what `bin_edges` represent.
+  pass  # remove me
   # ============================
   return score
 
@@ -95,6 +97,7 @@ def get_vocab_outlier(tr_vocab, te_vocab):
   # te_vocab: dict[str, int]
   #   Map from word to count for test examples
   # score: float (between 0 and 1)
+  pass  # remove me
   # ============================
   return score
 
@@ -129,6 +132,7 @@ class MonitoringSystem:
     # it to a torch.Tensor.
     # 
     # `te_probs_cal`: torch.Tensor
+    pass  # remove me
     # ============================
     return tr_probs_cal, te_probs_cal
 

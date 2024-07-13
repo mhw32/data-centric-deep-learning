@@ -51,6 +51,7 @@ class ProductReviewEmbeddings(Dataset):
     # Notes:
     # --
     # Convert tokens to lowercase when updating vocab.
+    pass  # remove me
     # ===============================
     return dict(vocab)
 
@@ -110,6 +111,7 @@ class ProductReviewStream(Dataset):
     # Type:
     # --
     # vocab: dict[str, int]
+    pass  # remove me
     # ===============================
     return dict(vocab)
 
