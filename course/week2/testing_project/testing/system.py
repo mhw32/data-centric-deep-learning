@@ -60,7 +60,7 @@ class MNISTDataModule(pl.LightningDataModule):
     self.train_dataset = train_dataset
     self.dev_dataset = dev_dataset
     self.test_dataset = test_dataset
-    self.batch_size = config.optimizer.batch_size
+    self.batch_size = 32
 
   def train_dataloader(self):
     # Create a dataloader for train dataset. 
@@ -92,6 +92,7 @@ class DigitClassifierSystem(pl.LightningModule):
     self.config = config
 
     # make directory to store data
+
     os.makedirs(config.data, exist_ok = True)
 
     # load model
@@ -106,9 +107,9 @@ class DigitClassifierSystem(pl.LightningModule):
 
     elif self.config.model == 'mlp':
       model = nn.Sequential(
-        nn.Linear(784, self.config.model.width),
+        nn.Linear(784, 16),
         nn.ReLU(),
-        nn.Linear(self.config.model.width, 10)
+        nn.Linear(16, 10)
       )
 
     else:

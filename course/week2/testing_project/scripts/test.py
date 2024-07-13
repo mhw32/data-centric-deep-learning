@@ -5,9 +5,9 @@ import torch
 import random
 import numpy as np
 from os.path import join
-from pathlib import Path
 from pprint import pprint
 
+from pytorch_lightning import Trainer
 from metaflow import FlowSpec, step, Parameter
 from testing.system import MNISTDataModule, DigitClassifierSystem
 from testing.integration import MNISTIntegrationTest
@@ -62,9 +62,11 @@ class TestFlow(FlowSpec):
     r"""Loads a trained deep learning model.
     """
     config = load_config(self.config_path)
+    checkpoint_path = join(CHECKPOINT_DIR, str(config.model))
 
     self.dm = MNISTDataModule(config)
-    self.system = DigitClassifierSystem.load_from_checkpoint(join(CHECKPOINT_DIR, config.model))
+    self.system = DigitClassifierSystem.load_from_checkpoint(checkpoint_path)
+    self.checkpoint_path = checkpoint_path
 
     self.next(self.test)
 
@@ -77,9 +79,8 @@ class TestFlow(FlowSpec):
     - If `regression`, then computes accuracy comparing a linear and a mlp 
     - If `directionality`, then compute agreement between a perturbed & a non-perturbed image
     """
-    if self.test_type == "offline":
-      # Load the best checkpoint and compute results using `self.trainer.test`
-      self.trainer.test(self.system, self.dm, ckpt_path = 'best')
+    if self.test_type == "offline": 
+      Trainer().test(self.system, self.dm, ckpt_path = self.checkpoint_path)
       results = self.system.test_results
       log_name = 'offline-test-results.json'
     elif self.test_type == "integration":

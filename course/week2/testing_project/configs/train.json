@@ -3,8 +3,7 @@
   "model": "linear",
   "optimizer": {
     "max_epochs": 10,
-    "batch_size": 32,
     "lr": 4e-3
   },
-  "save_dir": "./scratch/train_flow"
+  "save_dir": "./scratch/train"
 }
