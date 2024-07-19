@@ -22,7 +22,7 @@ class TrainFlow(FlowSpec):
 
   Arguments
   ---------
-  config (str, default: ./config.py): path to a configuration file
+  config (str, default: ./configs/train.json): path to a configuration file
   augment (bool, default: False): whether to augment the training dataset or not
   """
   config_path = Parameter('config', help = 'path to config file', default = join(CONFIG_DIR, 'train.json'))
@@ -46,7 +46,7 @@ class TrainFlow(FlowSpec):
     """
     # configuration files contain all hyperparameters
     config = load_config(self.config_path)
-
+    
     if self.augment:
       transform = transforms.Compose([
         # ================================
@@ -54,15 +54,13 @@ class TrainFlow(FlowSpec):
         # Any augmentations to apply to the training dataset with the goal of 
         # enlarging the effective dataset size via "self supervision": an augmented
         # data point maintains the same label.
-        transforms.RandomHorizontalFlip(p=0.5),
-        transforms.RandomRotation(degrees=30),
-        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),
+        # TODO
         # ================================
         transforms.ToTensor(),
       ])
     else:
       transform = transforms.ToTensor()
-    
+
     # a data module wraps around training, dev, and test datasets
     dm = FashionDataModule(transform=transform)
 
@@ -96,7 +94,6 @@ class TrainFlow(FlowSpec):
     """Calls `fit` on the trainer."""
 
     # Call `fit` on the trainer with `system` and `dm`.
-    # Our solution is one line.
     self.trainer.fit(self.system, self.dm)
 
     self.next(self.offline_test)
@@ -112,7 +109,7 @@ class TrainFlow(FlowSpec):
     # print results to command line
     pprint(results)
 
-    log_file = join(LOG_DIR, 'results.json')
+    log_file = join(LOG_DIR, 'augment.json' if self.augment else 'results.json')
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
     to_json(results, log_file)  # save to disk
 

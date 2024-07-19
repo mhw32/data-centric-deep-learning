@@ -1,7 +1,3 @@
-"""This flow will train a neural network to perform sentiment classification 
-for the beauty products reviews.
-"""
-
 import os
 import torch
 import random
@@ -167,6 +163,7 @@ class TrainIdentifyReview(FlowSpec):
       # Types:
       # --
       # probs_: np.array[float] (shape: |test set|)
+      # TODO
       # ===============================================
       assert probs_ is not None, "`probs_` is not defined."
       probs[test_index] = probs_
@@ -211,7 +208,11 @@ class TrainIdentifyReview(FlowSpec):
     # Types
     # --
     # ranked_label_issues: List[int]
-    pass
+    ranked_label_issues = find_label_issues(
+      np.asarray(self.all_df.label),
+      prob,
+      return_indices_ranked_by = "self_confidence",
+    )
     # =============================
     assert ranked_label_issues is not None, "`ranked_label_issues` not defined."
 
@@ -308,7 +309,7 @@ class TrainIdentifyReview(FlowSpec):
     # dm.train_dataset.data = training slice of self.all_df
     # dm.dev_dataset.data = dev slice of self.all_df
     # dm.test_dataset.data = test slice of self.all_df
-    pass 
+    # TODO
     # # ====================================
 
     # start from scratch
@@ -335,19 +336,19 @@ class TrainIdentifyReview(FlowSpec):
 
 if __name__ == "__main__":
   """
-  To validate this flow, run `python flow_conflearn.py`. To list
-  this flow, run `python flow_conflearn.py show`. To execute
-  this flow, run `python flow_conflearn.py run`.
+  To validate this flow, run `python conflearn.py`. To list
+  this flow, run `python conflearn.py show`. To execute
+  this flow, run `python conflearn.py run`.
 
   You may get PyLint errors from `numpy.random`. If so,
   try adding the flag:
 
-    `python flow_conflearn.py --no-pylint run`
+    `python conflearn.py --no-pylint run`
 
   If you face a bug and the flow fails, you can continue
   the flow at the point of failure:
 
-    `python flow_conflearn.py resume`
+    `python conflearn.py resume`
   
   You can specify a run id as well.
   """

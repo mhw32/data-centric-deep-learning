@@ -65,7 +65,7 @@ class ProductionDataset(Dataset):
   NOTE: You will not need to edit this.
   NOTE: Check that `data/production/dataset.pt` exists.
   """
-  def __init__(self, dataset_file: str):
+  def __init__(self, dataset_file: str, return_hidden_labels: bool = False):
     super().__init__()
     assert isfile(dataset_file), f'Dataset file {dataset_file} does not exist'
     
@@ -75,13 +75,21 @@ class ProductionDataset(Dataset):
     # able for us to compare the performances of our different labeling strategies
     self.hidden_labels = dataset['labels']
 
+    assert len(self.images) == len(self.hidden_labels), \
+      f'Sizes of images must match sizes of labels'
+    
+    self.return_hidden_labels = return_hidden_labels
+
   def __getitem__(self, index):
     x = self.images[index]
-    y = self.hidden_labels[index]  # pretend we don't actually have labels
-    return x, y
+
+    if self.return_hidden_labels:
+      y = self.hidden_labels[index]  # pretend we don't actually have labels
+      return x, int(y)
+    return x
 
   def __len__(self):
-    return len(self.paths)
+    return len(self.images)
 
 
 class FashionClassifierSystem(pl.LightningModule):
@@ -174,5 +182,5 @@ class FashionClassifierSystem(pl.LightningModule):
     # HACK: https://github.com/PyTorchLightning/pytorch-lightning/issues/1088
     self.test_results = results
 
-  def predict_step(self, x):
+  def predict_step(self, x, _):
     return self.forward(x)

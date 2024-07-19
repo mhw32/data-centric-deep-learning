@@ -11,7 +11,6 @@ from fashion.strategies import (
   uncertainty_sampling,
   margin_sampling,
   entropy_sampling,
-  cluster_sampling,
 )
 
 
@@ -28,10 +27,11 @@ def main(args):
   dl = DataLoader(ds, batch_size=10)
   
   # Fetch all the predicted probabilities which we will need for the annotation strategies
-  checkpoint_path = join(CHECKPOINT_DIR, 'model.pt')
+  checkpoint_path = join(CHECKPOINT_DIR, 'model.ckpt')
   system = FashionClassifierSystem.load_from_checkpoint(checkpoint_path)
-  preds = Trainer().predict(system, dataloaders = dl, return_predictions = True, ckpt_path = checkpoint_path)
-  pred_probs = ...
+  pred_logits = Trainer().predict(system, dataloaders = dl, return_predictions = True, ckpt_path = checkpoint_path)
+  pred_logits = torch.cat(pred_logits, dim=0)
+  pred_probs = torch.softmax(pred_logits, dim=1) # Convert logits to probs
 
   # Execute the strategy
   if args.strategy == "random":
@@ -42,14 +42,12 @@ def main(args):
     indices = margin_sampling(pred_probs, budget = args.budget)
   elif args.strategy == "entropy":
     indices = entropy_sampling(pred_probs, budget = args.budget)
-  elif args.strategy == "cluster":
-    indices = cluster_sampling(pred_probs, budget = args.budget)
   else:
     raise Exception(f'Strategy {args.strategy} is not a supported option.')
 
   # Fetch the images and labels and save them as a set
   annotated_images = torch.stack([ds.images[i] for i in indices])
-  annotated_labels = torch.Tensor([ds.labels[i] for i in indices])
+  annotated_labels = torch.Tensor([ds.hidden_labels[i] for i in indices])
 
   out_file = join(DATA_DIR, f'production/{args.strategy}.pt')
   torch.save({'images': annotated_images, 'labels': annotated_labels}, out_file)
@@ -60,7 +58,7 @@ if __name__ == "__main__":
   import argparse
   parser = argparse.ArgumentParser()
   parser.add_argument('--strategy', type=str, default='random', 
-                      choices=['random', 'uncertainty', 'margin', 'entropy', 'cluster'],
+                      choices=['random', 'uncertainty', 'margin', 'entropy'],
                       help='Annotation strategy (default: random)',
                       )
   parser.add_argument('--budget', type=int, default=1000, 

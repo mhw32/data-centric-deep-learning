@@ -25,4 +25,4 @@ def load_config(config_path: str) -> DotMap:
 def fix_random_seed(seed: int):
   random.seed(seed)
   np.random.seed(seed)
-  torch.seed(seed)
+  torch.manual_seed(seed)

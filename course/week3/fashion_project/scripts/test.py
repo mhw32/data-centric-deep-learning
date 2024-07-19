@@ -12,7 +12,7 @@ from pytorch_lightning import Trainer
 from metaflow import FlowSpec, step, Parameter
 from fashion.system import FashionDataModule, FashionClassifierSystem
 from fashion.system import ProductionDataset
-from fashion.utils import load_config, to_json
+from fashion.utils import to_json
 from fashion.paths import CONFIG_DIR, LOG_DIR, CHECKPOINT_DIR, DATA_DIR
 
 
@@ -22,21 +22,13 @@ class TestFlow(FlowSpec):
 
   Arguments
   ---------
-  config_path (str, default: ./config.py): path to a configuration file
-
+  config (str, default: ./configs/test.json): path to a configuration file
+  test (str, default: offline)
+  checkpoint (str, default: ./checkpoints/model.ckpt)
   """
-  config_path = Parameter(
-    'config', 
-    help='path to config file', 
-    default = join(CONFIG_DIR, 'test.json'), 
-    required = True,
-  )
-  test_type = Parameter(
-    'test', 
-    help='test type to run', 
-    default = 'offline', # production
-    required = True,
-  )
+  config_path = Parameter('config', help='path to config file', default = join(CONFIG_DIR, 'test.json'))
+  test_type = Parameter('test', help='test type to run', default = 'production') # offline
+  checkpoint_path = Parameter('checkpoint', help = 'path to checkpoint file', default = join(CHECKPOINT_DIR, 'model.ckpt'))
 
   @step
   def start(self):
@@ -53,9 +45,7 @@ class TestFlow(FlowSpec):
   def init_system(self):
     r"""Loads a trained deep learning model.
     """
-    checkpoint_path = join(CHECKPOINT_DIR, 'model.pt')
-    self.system = FashionClassifierSystem.load_from_checkpoint(checkpoint_path)
-    self.checkpoint_path = checkpoint_path
+    self.system = FashionClassifierSystem.load_from_checkpoint(self.checkpoint_path)
 
     self.next(self.test)
 
@@ -74,7 +64,9 @@ class TestFlow(FlowSpec):
       results = self.system.test_results
       log_name = 'offline.json'
     else:
-      ds = ProductionDataset(join(DATA_DIR, 'production/dataset.pt'))
+      # We pretend we have access to all the labels to compute these results
+      # In reality, we do not have these hidden labels accessible.
+      ds = ProductionDataset(join(DATA_DIR, 'production/dataset.pt'), return_hidden_labels = True)
       dl = DataLoader(ds, batch_size=10)
       trainer.test(self.system, dataloaders = dl, ckpt_path = self.checkpoint_path)
       results = self.system.test_results
