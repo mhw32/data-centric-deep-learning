@@ -6,27 +6,35 @@ import random
 import numpy as np
 from os.path import join
 from pprint import pprint
+from torch.utils.data import DataLoader
 
 from pytorch_lightning import Trainer
 from metaflow import FlowSpec, step, Parameter
 from fashion.system import FashionDataModule, FashionClassifierSystem
+from fashion.system import ProductionDataset
 from fashion.utils import load_config, to_json
-from fashion.paths import CONFIG_DIR, LOG_DIR, IMAGE_DIR, CHECKPOINT_DIR
+from fashion.paths import CONFIG_DIR, LOG_DIR, CHECKPOINT_DIR, DATA_DIR
 
 
 class TestFlow(FlowSpec):
-  r"""A flow that trains a image classifier to recognize handwritten
-  digit, such as those in the MNIST dataset. Includes an regression 
-  test using a trained model.
+  r"""A MetaFlow that evaluates a image classifier to recognize images of fashion clothing
+  on production data.
 
   Arguments
   ---------
   config_path (str, default: ./config.py): path to a configuration file
+
   """
   config_path = Parameter(
     'config', 
     help='path to config file', 
     default = join(CONFIG_DIR, 'test.json'), 
+    required = True,
+  )
+  test_type = Parameter(
+    'test', 
+    help='test type to run', 
+    default = 'offline', # production
     required = True,
   )
 
@@ -45,10 +53,7 @@ class TestFlow(FlowSpec):
   def init_system(self):
     r"""Loads a trained deep learning model.
     """
-    config = load_config(self.config_path)
-    checkpoint_path = join(CHECKPOINT_DIR, str(config.model))
-
-    self.dm = FashionDataModule(config)
+    checkpoint_path = join(CHECKPOINT_DIR, 'model.pt')
     self.system = FashionClassifierSystem.load_from_checkpoint(checkpoint_path)
     self.checkpoint_path = checkpoint_path
 
@@ -58,15 +63,22 @@ class TestFlow(FlowSpec):
   def test(self):
     r"""Performs evaluation on a trained model.
     Depends on the `self.test_type` parameter. 
-    - If `offline`, then computes accuracy on the fixed MNIST test set
-    - If `integration`, then computes accuracy on your handwritten digits
-    - If `regression`, then computes accuracy comparing a linear and a mlp 
-    - If `directionality`, then compute agreement between a perturbed & a non-perturbed image
+    - If `offline`, then computes accuracy on the fixed FashionMNIST test set
+    - If `production`, then computes accuracy on set of production data
     """
     trainer = Trainer()
-    trainer.test(self.system, self.dm, ckpt_path = self.checkpoint_path)
-    results = self.system.test_results
-    log_name = 'results.json'
+
+    if self.test == "offline":
+      dm = FashionDataModule()
+      trainer.test(self.system, dm, ckpt_path = self.checkpoint_path)
+      results = self.system.test_results
+      log_name = 'offline.json'
+    else:
+      ds = ProductionDataset(join(DATA_DIR, 'production/dataset.pt'))
+      dl = DataLoader(ds, batch_size=10)
+      trainer.test(self.system, dataloaders = dl, ckpt_path = self.checkpoint_path)
+      results = self.system.test_results
+      log_name = 'production.json'
 
     # print results to command line
     pprint(results)
