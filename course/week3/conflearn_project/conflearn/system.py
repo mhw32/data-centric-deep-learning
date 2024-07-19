@@ -1,6 +1,3 @@
-r"""A PyTorch Lightning system for training MNIST."""
-
-import os
 import torch
 import torch.nn as nn
 from torch import optim
@@ -8,11 +5,12 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
 import pytorch_lightning as pl
-from src.dataset import ProductReviewEmbeddings
+from conflearn.dataset import ProductReviewEmbeddings
 
 
 class ReviewDataModule(pl.LightningDataModule):
-  r"""Data module wrapper around review datasets."""
+  r"""Data module wrapper around review datasets.
+  """
 
   def __init__(self, config):
     super().__init__()

@@ -6,27 +6,21 @@ import os
 import torch
 import random
 import numpy as np
-import pandas as pd
 from os.path import join
 from pathlib import Path
 from pprint import pprint
-from torch.utils.data import DataLoader, TensorDataset
 
 from metaflow import FlowSpec, step, Parameter
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
-from cleanlab.filter import find_label_issues
-from sklearn.model_selection import KFold
 
-from src.system import ReviewDataModule, SentimentClassifierSystem
-from src.utils import load_config, to_json
-from src.consts import DATA_DIR
+from conflearn.system import ReviewDataModule, SentimentClassifierSystem
+from conflearn.utils import load_config, to_json
 
 
 class TrainBaseline(FlowSpec):
   r"""A MetaFlow that trains a sentiment classifier on reviews of luxury beauty
-  products using PyTorch Lightning, identifies data quality issues using CleanLab, 
-  and prepares them for review in LabelStudio.
+  products using PyTorch Lightning. Reports offline evaluation on a test set.
 
   Arguments
   ---------
