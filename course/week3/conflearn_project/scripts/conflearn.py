@@ -22,7 +22,7 @@ from cleanlab.filter import find_label_issues
 
 from conflearn.system import ReviewDataModule, SentimentClassifierSystem
 from conflearn.utils import load_config, to_json
-from conflearn.paths import DATA_DIR
+from conflearn.paths import DATA_DIR, LOG_DIR
 
 
 class TrainIdentifyReview(FlowSpec):
@@ -34,8 +34,7 @@ class TrainIdentifyReview(FlowSpec):
   ---------
   config (str, default: ./config.py): path to a configuration file
   """
-  config_path = Parameter('config', 
-    help = 'path to config file', default='./config.json')
+  config_path = Parameter('config', help = 'path to config file', default='./train.json')
 
   @step
   def start(self):
@@ -73,7 +72,8 @@ class TrainIdentifyReview(FlowSpec):
 
     trainer = Trainer(
       max_epochs = config.train.optimizer.max_epochs,
-      callbacks = [checkpoint_callback])
+      callbacks = [checkpoint_callback],
+    )
 
     # when we save these objects to a `step`, they will be available
     # for use in the next step, through not steps after.
@@ -102,10 +102,8 @@ class TrainIdentifyReview(FlowSpec):
     # print results to command line
     pprint(results)
 
-    log_file = join(Path(__file__).resolve().parent.parent, 
-      f'logs', 'pre-results.json')
-
-    os.makedirs(os.path.dirname(log_file), exist_ok = True)
+    log_file = join(LOG_DIR, 'baseline.json')
+    os.makedirs(LOG_DIR, exist_ok = True)
     to_json(results, log_file)  # save to disk
 
     self.next(self.crossval)
@@ -213,6 +211,7 @@ class TrainIdentifyReview(FlowSpec):
     # Types
     # --
     # ranked_label_issues: List[int]
+    pass
     # =============================
     assert ranked_label_issues is not None, "`ranked_label_issues` not defined."
 
@@ -314,8 +313,7 @@ class TrainIdentifyReview(FlowSpec):
 
     # start from scratch
     system = SentimentClassifierSystem(self.config)
-    trainer = Trainer(
-      max_epochs = self.config.train.optimizer.max_epochs)
+    trainer = Trainer(max_epochs = self.config.train.optimizer.max_epochs)
 
     trainer.fit(system, dm)
     trainer.test(system, dm, ckpt_path = 'best')
@@ -323,10 +321,8 @@ class TrainIdentifyReview(FlowSpec):
 
     pprint(results)
 
-    log_file = join(Path(__file__).resolve().parent.parent, 
-      f'logs', 'post-results.json')
-
-    os.makedirs(os.path.dirname(log_file), exist_ok = True)
+    log_file = join(LOG_DIR, 'conflearn.json')
+    os.makedirs(LOG_DIR, exist_ok = True)
     to_json(results, log_file)  # save to disk
 
     self.next(self.end)

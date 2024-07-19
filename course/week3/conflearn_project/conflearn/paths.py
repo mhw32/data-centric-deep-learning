@@ -4,3 +4,4 @@ from os.path import realpath, dirname, join
 CUR_DIR = realpath(dirname(__file__))
 ROOT_DIR = realpath(join(CUR_DIR, '..'))
 DATA_DIR = realpath(join(ROOT_DIR, 'data'))
+LOG_DIR = realpath(join(ROOT_DIR, 'logs'))
