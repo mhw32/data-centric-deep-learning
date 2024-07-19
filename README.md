@@ -14,6 +14,8 @@ Students will walk through each step of a deep model's lifecycle, from annotatio
 
 This class is an extremely hands-on project-driven course. Students will work with real data across images, speech audio, and natural language. Students will leverage state-of-the-art methods to achieve high performance, as well as break these models to analyze their shortcomings in practice.  
 
+In **July '24**, we have updated this course in light of recent advancements with large language models and the new ecosystem of data centric problems this new class of models present.
+
 ## Class layout 
 
 This course will have four weekly projects. Each project will build on concepts from the prior week but have its own standalone components. 
@@ -29,4 +31,4 @@ We expect students to be proficient in Python programming, and familiar with dee
 These projects are best done through Github codespaces. 
 
 1. Fork this repo (leave box checked for "Copy the main branch only")
-2. Follow this video for the rest.
+2. We recommend using Github Codespaces. If you click the green "Code" button at the top right of this page, you should be able to enter a dev environment for completing this assignment.
