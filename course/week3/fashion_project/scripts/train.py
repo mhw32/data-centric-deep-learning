@@ -92,7 +92,7 @@ class TrainFlow(FlowSpec):
     # print results to command line
     pprint(results)
 
-    log_file = join(LOG_DIR, 'offline-test-results.json')
+    log_file = join(LOG_DIR, 'results.json')
     os.makedirs(os.path.dirname(log_file), exist_ok = True)
     to_json(results, log_file)  # save to disk
 
