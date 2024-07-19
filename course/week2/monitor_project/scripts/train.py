@@ -73,6 +73,7 @@ class TrainClassifier(FlowSpec):
   
     self.next(self.train_model)
 
+
   @step
   def train_model(self):
     """Calls `fit` on the trainer."""
@@ -85,7 +86,7 @@ class TrainClassifier(FlowSpec):
 
     # Call `fit` on the trainer with `system` and `dm`.
     # Our solution is one line.
-    self.trainer.fit(system, dm)
+    self.trainer.fit(self.system, self.dm)
 
     self.next(self.offline_test)
 
@@ -97,8 +98,8 @@ class TrainClassifier(FlowSpec):
     system = SentimentClassifierSystem(self.config)
 
     # Load the best checkpoint and compute results using `self.trainer.test`
-    self.trainer.test(system, dm, ckpt_path = 'best')
-    results = system.test_results
+    self.trainer.test(self.system, self.dm, ckpt_path = 'best')
+    results = self.system.test_results
 
     # print results to command line
     pprint(results)
