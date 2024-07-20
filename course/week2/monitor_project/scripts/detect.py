@@ -1,3 +1,4 @@
+import os
 import torch
 import numpy as np
 from pytorch_lightning import Trainer
@@ -8,7 +9,7 @@ from monitor.metrics import MonitoringSystem
 from monitor.dataset import ProductReviewStream, ProductReviewEmbeddings
 from monitor.systems import SentimentClassifierSystem
 from monitor.paths import LOG_DIR
-
+from monitor.utils import to_json
 
 def main(args):
   rs = np.random.RandomState(42)
@@ -28,6 +29,7 @@ def main(args):
   # and predicted probabilities.
   monitor = MonitoringSystem(tr_vocab, tr_probs, tr_labels)
 
+  results_per_stream = []
   for index in range(1, 9):
     te_ds = ProductReviewStream(index)
     te_dl = DataLoader(te_ds, batch_size=128, shuffle=False, num_workers=4)
@@ -56,7 +58,10 @@ def main(args):
       print(f'Histogram intersection(using uncalibrated score): {results["hist_score_uncalibrated_p"]:.4f}')
       print(f'OOD Vocab %: {results["outlier_score"]*100:.2f}')
       print('')  # new line
+      results['stream_index'] = index
 
+    results_per_stream.append(results)
+  to_json(results_per_stream, os.path.join(LOG_DIR, "detect_drift_per_stream.json"))
 
 def get_probs(system, loader):
   trainer = Trainer(logger = TensorBoardLogger(save_dir=LOG_DIR))

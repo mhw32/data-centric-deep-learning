@@ -83,7 +83,6 @@ def get_hist_score(tr_probs, te_probs, bins=10):
 
 
 def get_vocab_outlier(tr_vocab, te_vocab):
-  score = None
   # ============================
   # FILL ME OUT
   # 
@@ -106,9 +105,10 @@ def get_vocab_outlier(tr_vocab, te_vocab):
   # te_vocab: dict[str, int]
   #   Map from word to count for test examples
   # score: float (between 0 and 1)
-  score = -1 # TBD: implement this
+  num_seen = len(set(te_vocab.keys()).intersection(set(tr_vocab.keys())))
+  num_total = len(te_vocab)
   # ============================
-  return score
+  return 1 - num_seen / num_total
 
 
 class MonitoringSystem:
@@ -169,5 +169,8 @@ class MonitoringSystem:
       'hist_score_uncalibrated_p': hist_score_uncal,
 
       'outlier_score': outlier_score,
+
+      'avg_tr_prob_calibrated': tr_probs_cal.mean().item(), 
+      'avg_te_prob_calibrated': te_probs_cal.mean().item() 
     }
     return metrics
