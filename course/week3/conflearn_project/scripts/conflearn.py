@@ -208,11 +208,7 @@ class TrainIdentifyReview(FlowSpec):
     # Types
     # --
     # ranked_label_issues: List[int]
-    ranked_label_issues = find_label_issues(
-      np.asarray(self.all_df.label),
-      prob,
-      return_indices_ranked_by = "self_confidence",
-    )
+    # TODO
     # =============================
     assert ranked_label_issues is not None, "`ranked_label_issues` not defined."
 
