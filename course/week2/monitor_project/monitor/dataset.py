@@ -1,12 +1,20 @@
 import torch
 import numpy as np
 import pandas as pd
+import re
 from os.path import join
 from torch.utils.data import Dataset
-from collections import defaultdict
-
+from collections import defaultdict, Counter
+from typing import Dict
 from .paths import DATA_DIR
 
+
+def build_dictionary_from_reviews(df: pd.DataFrame) -> Dict[str,int]:
+  vocab = Counter()
+  for review in df['review']:
+    words = [w for w in re.split('\W+', review) if w] # filter out empty strings
+    vocab.update(words)
+  return vocab
 
 class ProductReviewEmbeddings(Dataset):
   r"""RoBERTa embeddings of customer reviews. Embeddings are precomputed 
@@ -51,7 +59,8 @@ class ProductReviewEmbeddings(Dataset):
     # Notes:
     # --
     # Convert tokens to lowercase when updating vocab.
-    pass  # remove me
+    vocab = build_dictionary_from_reviews(self.data)
+    print("ProductReviewEmbeddings/vocab/top 5:", vocab.most_common(5))
     # ===============================
     return dict(vocab)
 
@@ -111,7 +120,8 @@ class ProductReviewStream(Dataset):
     # Type:
     # --
     # vocab: dict[str, int]
-    pass  # remove me
+    vocab = build_dictionary_from_reviews(self.data)
+    print("ProductReviewStream/vocab/top 5:", vocab.most_common(5))
     # ===============================
     return dict(vocab)
 
