@@ -50,8 +50,10 @@ def main(args):
       print('\n==========================')
       print(f'STREAM ({index} out of 8)')
       print('==========================')
-      print(f'KS test p-value: {results["ks_score"]:.3f}')
-      print(f'Histogram intersection: {results["hist_score"]:.3f}')
+      print(f'KS test p-value: {results["ks_score"]:.4f}')
+      print(f'KS test p-value(using uncalibrated score): {results["ks_score_uncalibrated_p"]:.4f}')
+      print(f'Histogram intersection: {results["hist_score"]:.4f}')
+      print(f'Histogram intersection(using uncalibrated score): {results["hist_score_uncalibrated_p"]:.4f}')
       print(f'OOD Vocab %: {results["outlier_score"]*100:.2f}')
       print('')  # new line
 

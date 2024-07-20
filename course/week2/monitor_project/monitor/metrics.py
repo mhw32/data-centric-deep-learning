@@ -25,7 +25,7 @@ def get_ks_score(tr_probs, te_probs):
   # te_probs: torch.Tensor
   #   predicted probabilities from test test
   # score: float - between 0 and 1
-  pass  # remove me
+  score = ks_2samp(tr_probs.numpy(), te_probs.numpy()).pvalue
   # ============================
   return score
 
@@ -68,8 +68,17 @@ def get_hist_score(tr_probs, te_probs, bins=10):
   # 
   # Read the documentation for `np.histogram` carefully, in
   # particular what `bin_edges` represent.
-  pass  # remove me
+  tr_heights, bin_edges = np.histogram(tr_probs.numpy(), bins=bins, density=True)
+  te_heights, _ = np.histogram(te_probs.numpy(), bins=bin_edges, density=True)
+  score = 0
+  for i in range(len(tr_heights)):
+    w = bin_edges[i+1] - bin_edges[i]
+    tr_area = tr_heights[i] * w
+    te_area = te_heights[i] * w
+    intersect = min(tr_area, te_area)
+    score = score + intersect
   # ============================
+  assert 0 <= score <= 1
   return score
 
 
@@ -97,7 +106,7 @@ def get_vocab_outlier(tr_vocab, te_vocab):
   # te_vocab: dict[str, int]
   #   Map from word to count for test examples
   # score: float (between 0 and 1)
-  pass  # remove me
+  score = -1 # TBD: implement this
   # ============================
   return score
 
@@ -132,21 +141,33 @@ class MonitoringSystem:
     # it to a torch.Tensor.
     # 
     # `te_probs_cal`: torch.Tensor
-    pass  # remove me
+    calibrating_estimator = IsotonicRegression(y_min=0, y_max=1, out_of_bounds='clip') # y is a probability - should be in [0, 1] range
+    calibrating_estimator.fit(tr_probs.numpy(), tr_labels.numpy())
+
+    tr_probs_cal = torch.tensor(calibrating_estimator.predict(tr_probs.numpy()), dtype=tr_probs.dtype)
+    te_probs_cal = torch.tensor(calibrating_estimator.predict(te_probs.numpy()), dtype=te_probs.dtype)
     # ============================
     return tr_probs_cal, te_probs_cal
 
   def monitor(self, te_vocab, te_probs):
-    tr_probs, te_probs = self.calibrate(self.tr_probs, self.tr_labels, te_probs)
+    tr_probs_cal, te_probs_cal = self.calibrate(self.tr_probs, self.tr_labels, te_probs)
 
     # compute metrics. 
-    ks_score = get_ks_score(tr_probs, te_probs)
-    hist_score = get_hist_score(tr_probs, te_probs)
+    ks_score_cal = get_ks_score(tr_probs_cal, te_probs_cal)
+    ks_score_uncal = get_ks_score(self.tr_probs, te_probs)
+
+    hist_score_cal = get_hist_score(tr_probs_cal, te_probs_cal)
+    hist_score_uncal = get_hist_score(self.tr_probs, te_probs)
+
     outlier_score = get_vocab_outlier(self.tr_vocab, te_vocab)
 
     metrics = {
-      'ks_score': ks_score,
-      'hist_score': hist_score,
+      'ks_score': ks_score_cal,
+      'ks_score_uncalibrated_p': ks_score_uncal,
+
+      'hist_score': hist_score_cal,
+      'hist_score_uncalibrated_p': hist_score_uncal,
+
       'outlier_score': outlier_score,
     }
     return metrics
