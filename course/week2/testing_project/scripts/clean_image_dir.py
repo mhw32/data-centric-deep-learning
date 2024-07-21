@@ -111,15 +111,15 @@ def clean_photo_image(path, out_dir):
 
 
 if __name__ == "__main__":
-  from glob import glob
-  from os.path import join
   from pathlib import Path
 
-  root = join(Path(__file__).resolve().parent, 'images/integration')
-  raw_dir = 'digits-raw'
-  out_dir = 'digits-processed'
+  root = Path(__file__).resolve().parent.parent / 'images' / 'integration'
+  raw_dir = root / 'digits-raw'
+  out_dir = root / 'digits-processed'
 
-  raw_paths = glob(join(root, raw_dir, '*.png'))
+  out_dir.mkdir(parents=True, exist_ok=True)
+
+  raw_paths = raw_dir.glob('*.png')
 
   for raw_path in raw_paths:
-    clean_photo_image(raw_path, join(root, out_dir))
+    clean_photo_image(str(raw_path), str(out_dir))

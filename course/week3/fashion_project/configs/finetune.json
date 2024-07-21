@@ -1,0 +1,7 @@
+{
+  "optimizer": {
+    "max_epochs": 20,
+    "lr": 4e-3
+  },
+  "save_dir": "./scratch/finetune"
+}
