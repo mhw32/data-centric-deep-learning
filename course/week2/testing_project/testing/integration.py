@@ -65,7 +65,7 @@ class MNISTIntegrationTest(BaseTest):
     # --
     # Nothing to return here
     loader = self.get_dataloader()
-    return trainer.test(loader, system)
+    trainer.test(system, dataloaders=loader)
     # ================================
 
 
