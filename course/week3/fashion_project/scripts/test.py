@@ -26,7 +26,6 @@ class TestFlow(FlowSpec):
   test (str, default: offline)
   checkpoint (str, default: ./checkpoints/model.ckpt)
   """
-  config_path = Parameter('config', help='path to config file', default = join(CONFIG_DIR, 'test.json'))
   test_type = Parameter('test', help='test type to run', default = 'production') # offline
   checkpoint_path = Parameter('checkpoint', help = 'path to checkpoint file', default = join(CHECKPOINT_DIR, 'model.ckpt'))
 
