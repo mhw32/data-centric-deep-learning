@@ -23,6 +23,10 @@
     "8888": {
       "label": "Jupyter Notebook",
       "onAutoForward": "openBrowser"
+    },
+    "8080": {
+      "label": "LabelStudio",
+      "onAutoForward": "openBrowser"
     }
   }
 }
