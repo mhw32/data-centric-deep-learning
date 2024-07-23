@@ -4,7 +4,6 @@ import random
 import numpy as np
 import pandas as pd
 from os.path import join
-from pathlib import Path
 from pprint import pprint
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -18,7 +17,7 @@ from cleanlab.filter import find_label_issues
 
 from conflearn.system import ReviewDataModule, SentimentClassifierSystem
 from conflearn.utils import load_config, to_json
-from conflearn.paths import DATA_DIR, LOG_DIR
+from conflearn.paths import DATA_DIR, LOG_DIR, CONFIG_DIR
 
 
 class TrainIdentifyReview(FlowSpec):
@@ -49,7 +48,7 @@ class TrainIdentifyReview(FlowSpec):
     and lightning trainer instance.
     """
     # configuration files contain all hyperparameters
-    config = load_config(self.config_path)
+    config = load_config(join(CONFIG_DIR, self.config_path))
 
     # a callback to save best model weights
     checkpoint_callback = ModelCheckpoint(
