@@ -39,14 +39,6 @@ class TestFlow(FlowSpec):
     np.random.seed(42)
     torch.manual_seed(42)
 
-    self.next(self.init_system)
-
-  @step
-  def init_system(self):
-    r"""Loads a trained deep learning model.
-    """
-    self.system = FashionClassifierSystem.load_from_checkpoint(self.checkpoint_path)
-
     self.next(self.test)
 
   @step
@@ -58,18 +50,21 @@ class TestFlow(FlowSpec):
     """
     trainer = Trainer()
 
+    # Load trained system
+    system = FashionClassifierSystem.load_from_checkpoint(self.checkpoint_path)
+
     if self.test == "offline":
       dm = FashionDataModule()
-      trainer.test(self.system, dm, ckpt_path = self.checkpoint_path)
-      results = self.system.test_results
+      trainer.test(system, dm, ckpt_path = self.checkpoint_path)
+      results = system.test_results
       log_name = 'offline.json'
     else:
       # We pretend we have access to all the labels to compute these results
       # In reality, we do not have these hidden labels accessible.
       ds = ProductionDataset(join(DATA_DIR, 'production/dataset.pt'), return_hidden_labels = True)
       dl = DataLoader(ds, batch_size=10)
-      trainer.test(self.system, dataloaders = dl, ckpt_path = self.checkpoint_path)
-      results = self.system.test_results
+      trainer.test(system, dataloaders = dl, ckpt_path = self.checkpoint_path)
+      results = system.test_results
       log_name = 'production.json'
 
     # print results to command line

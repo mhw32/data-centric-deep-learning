@@ -50,7 +50,6 @@ class EvalClassifier(FlowSpec):
     r"""Load pretrain system on new training data."""
     config = load_config(self.config_path)
 
-    self.system = SentimentClassifierSystem.load_from_checkpoint(join(CHECKPOINT_DIR, config.model))
     self.trainer = Trainer(logger = TensorBoardLogger(save_dir=LOG_DIR))
   
     self.next(self.evaluate)
@@ -68,11 +67,14 @@ class EvalClassifier(FlowSpec):
     es_dl = DataLoader(es_ds, batch_size = config.batch_size, 
       num_workers = config.num_workers)
 
-    self.trainer.test(self.system, dataloaders = en_dl)
-    en_results = self.system.test_results
+    # Load the pretrained system model
+    system = SentimentClassifierSystem.load_from_checkpoint(join(CHECKPOINT_DIR, config.model))
 
-    self.trainer.test(self.system, dataloaders = es_dl)
-    es_results = self.system.test_results
+    self.trainer.test(system, dataloaders = en_dl)
+    en_results = system.test_results
+
+    self.trainer.test(system, dataloaders = es_dl)
+    es_results = system.test_results
 
     print('Results on English reviews:')
     pprint(en_results)
