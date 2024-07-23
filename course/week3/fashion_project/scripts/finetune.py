@@ -50,13 +50,6 @@ class FinetuneFlow(FlowSpec):
     """
     # configuration files contain all hyperparameters
     config = load_config(self.config_path)
-    
-    # a data module wraps around training, dev, and test datasets
-    ds = ProductionDataset(self.dataset_path, return_hidden_labels = True)
-    dl = DataLoader(ds, batch_size = 32, shuffle = True)
-
-    # Loading the checkpoint file & initialize model
-    system = FashionClassifierSystem(config)
 
     # a callback to save best model weights
     checkpoint_callback = ModelCheckpoint(
@@ -75,9 +68,8 @@ class FinetuneFlow(FlowSpec):
 
     # when we save these objects to a `step`, they will be available
     # for use in the next step, through not steps after.
-    self.dl = dl
-    self.system = system
     self.trainer = trainer
+    self.config = config
 
     self.next(self.finetune_model)
 
@@ -85,8 +77,15 @@ class FinetuneFlow(FlowSpec):
   def finetune_model(self):
     """Calls `fit` on the trainer."""
 
+    # a data module wraps around training, dev, and test datasets
+    ds = ProductionDataset(self.dataset_path, return_hidden_labels = True)
+    dl = DataLoader(ds, batch_size = 32, shuffle = True)
+
+    # Loading the checkpoint file & initialize model
+    system = FashionClassifierSystem(self.config)
+
     # Call `fit` on the trainer with `system` and `dl`.
-    self.trainer.fit(self.system, train_dataloaders=self.dl, ckpt_path=self.checkpoint_path)
+    self.trainer.fit(system, train_dataloaders=dl, ckpt_path=self.checkpoint_path)
 
     self.next(self.end)
 
