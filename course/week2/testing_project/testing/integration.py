@@ -64,8 +64,8 @@ class MNISTIntegrationTest(BaseTest):
     # Notes:
     # --
     # Nothing to return here
-    pass  # remove me
-    # ================================
+    loader = self.get_dataloader()
+    trainer.test(system, dataloaders=loader)
 
 
 class MNISTIntegrationDataset(Dataset):
