@@ -27,7 +27,7 @@ QUESTION:
   return prompt
 
 
-def craft_hyde_prompt(question: str) -> str:
+def get_hyde_response_prompt(question: str) -> str:
   prompt = f"""Please answer the following question to the best of your ability. 
 If you do not know the answer, make your best guess. Do not say you do not know the answer. 
 
@@ -38,13 +38,27 @@ ANSWER:
   return prompt
 
 
-def get_llm_judge_prompt(question: str, response: str) -> str:
+def get_question_judge_prompt(question: str, context: str) -> str:
+  # https://lightning.ai/panchamsnotes/studios/evaluate-your-rag-part-1-synthesize-an-evaluation-dataset
+  prompt = f"""You will be given a context and a question.
+Your task is to provide a 'total rating' scoring how well one can answer the given question unambiguously with the given context.
+Give your answer on a scale of 1 to 5, where 1 means that the question is not answerable at all given the context, and 5 means that the question is clearly and unambiguously answerable with the context.
+
+CONTEXT: {context}
+
+QUESTION: {question}
+
+RATING: 
+"""
+  return prompt
+
+
+def get_response_judge_prompt(question: str, response: str) -> str:
   # Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena
   # https://arxiv.org/abs/2306.05685
   prompt = f"""Please act as an impartial judge and evaluate the quality of the response provided by an AI assistant to the user question displayed below. 
 Your evaluation should consider factors such as the helpfulness, relevance, accuracy, depth, creativity, and level of detail of the response. 
-Begin your evaluation by providing a short explanation. Be as objective as possible. 
-After providing your explanation, please rate the response on a scale of 1 to 10 by strictly following this format: "[[rating]]", for example: "Rating: [[5]]".
+Give your answer on a scale of 1 to 5, where 1 means that the repsonse does not answer question at all, and 5 means that the response clearly and unambiguously answers the question.
 
 QUESTION: {question}
 
@@ -55,7 +69,3 @@ EXPLANATION:
 RATING:
 """  
   return prompt
-
-
-def get_persona() -> str:
-  return ""  # TODO
