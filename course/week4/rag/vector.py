@@ -2,10 +2,17 @@ from typing import List, Dict
 from starpoint.db import Client
 
 
+def get_my_collection_name(github_username: str) -> str:
+  r"""Helper function to return collection name.
+  :note: All learners will be sharing an API key so it is important everyone has different collection names.
+  """
+  return f"dcdl-week4-{github_username}"
+
+
 def create_collection(api_key: str, collection_name: str, dimensionality: int = 768) -> Dict:
   r"""Create a collection in Starpoint.
   :param api_key: Starpoint API key
-  :param collection_name: Desired name of the collection. Please set this to `dcdl-week4-<YOUR_GITHUB_USERNAME>`.
+  :param collection_name: Desired name of the collection. Please user `get_my_collection_name`
   :param dimensionality: Expected number of embedding dimensions
   :note: See https://docs.starpoint.ai/create-documents/
   :return: 

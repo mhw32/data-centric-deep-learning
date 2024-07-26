@@ -1,3 +1,7 @@
+import json
+from dotmap import DotMap
+
+
 class sty:
   BLUE = "\033[0;34m"
   CYAN = "\033[0;36m"
@@ -37,3 +41,18 @@ def pp(*args, **kwargs):
 
 def pg(*args, **kwargs):
   color_print(sty.GREEN, *args, **kwargs)
+
+
+def to_json(x, filepath):
+  with open(filepath, 'w') as fp:
+    json.dump(x, fp)
+
+
+def from_json(filepath):
+  with open(filepath, 'r') as fp:
+    data = json.load(fp)
+  return data
+
+
+def load_config(config_path):
+  return DotMap(from_json(config_path))

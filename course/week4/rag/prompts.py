@@ -1,6 +1,17 @@
 from typing import List
 
 
+def get_persona() -> str:
+  r"""Sets the persona for the agent.
+  """
+  message = """You are a helpful assistant whose job is to answer any questions that the user has. 
+You will have access to context information to help you craft a response to each question.
+Always be truthful.
+If you are unsure, say "I don't know".
+"""
+  return message
+
+
 def get_retrieval_prompt(query: str, documents: List[str]) -> str:
   context = '\n\n'.join(documents)
   prompt = f'''
