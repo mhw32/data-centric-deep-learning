@@ -10,3 +10,8 @@ This project will implement confidence learning to identify elements for relabel
 ```
 gdown --id 12UtQMwfSgm4FpXSFZvLDNLO8VGxzCPYq
 ```
+
+# SUMMARY
+
+MODEL W/O CONFIDENCE LEARNING  : 88.1% 
+MODEL WITH CONFIDENCE LEARNING : 91.9% 
