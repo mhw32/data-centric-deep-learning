@@ -227,13 +227,18 @@ class TrainIdentifyReview(FlowSpec):
     # Types
     # --
     # ranked_label_issues: List[int]
-    # TODO
     # =============================
+    ranked_label_issues = find_label_issues(self.all_df.label, prob, return_indices_ranked_by="self_confidence")
     assert ranked_label_issues is not None, "`ranked_label_issues` not defined."
 
     # save this to class
     self.issues = ranked_label_issues
     print(f'{len(ranked_label_issues)} label issues found.')
+    print("## Examples of issues:")
+    for idx in ranked_label_issues[:min(3,len(ranked_label_issues))]:
+      print(f"IDx:{idx}, Label: {self.all_df.loc[idx,'label']}, Predicted prob:{self.all_df.loc[idx,'prob']:.4f}")
+      print(self.all_df.loc[idx,'review'][:250])
+      print('---')
 
     # overwrite label for all the entries in all_df
     for index in self.issues:
