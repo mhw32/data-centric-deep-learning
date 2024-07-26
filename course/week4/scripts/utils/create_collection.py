@@ -1,3 +1,4 @@
+from os import makedirs
 from os.path import join
 from rag.vector import get_my_collection_name, create_collection
 from rag.utils import to_json
@@ -15,6 +16,7 @@ def main(args):
     dimensionality=args.dimensionality,
   )
   # Save info to the collections dir
+  makedirs(join(DATA_DIR, 'collections'), exist_ok=True)
   collection_file = join(DATA_DIR, 'collections', f'{collection_name}.json')
   to_json(collection, collection_file)
 

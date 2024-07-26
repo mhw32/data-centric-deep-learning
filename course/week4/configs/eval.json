@@ -1,4 +1,6 @@
 {
   "num_questions": 100,
-  "filter_questions_by_judge": true
+  "min_rating": 3,
+  "filter_questions_by_judge": true,
+  "dataset": "data-orig.csv"
 }
