@@ -13,7 +13,7 @@ from metaflow import FlowSpec, step, Parameter
 from fashion.system import FashionDataModule, FashionClassifierSystem
 from fashion.system import ProductionDataset
 from fashion.utils import to_json
-from fashion.paths import CONFIG_DIR, LOG_DIR, CHECKPOINT_DIR, DATA_DIR
+from fashion.paths import LOG_DIR, CHECKPOINT_DIR, DATA_DIR
 
 
 class TestFlow(FlowSpec):
@@ -26,7 +26,7 @@ class TestFlow(FlowSpec):
   test (str, default: offline)
   checkpoint (str, default: ./checkpoints/model.ckpt)
   """
-  test_type = Parameter('test', help='test type to run', default = 'production') # offline
+  test_type = Parameter('test_type', help='test type to run', default = 'production') # offline
   checkpoint_path = Parameter('checkpoint', help = 'path to checkpoint file', default = join(CHECKPOINT_DIR, 'model.ckpt'))
 
   @step
@@ -52,7 +52,7 @@ class TestFlow(FlowSpec):
     # Load trained system
     system = FashionClassifierSystem.load_from_checkpoint(self.checkpoint_path)
 
-    if self.test == "offline":
+    if self.test_type == "offline":
       dm = FashionDataModule()
       trainer.test(system, dm, ckpt_path = self.checkpoint_path)
       results = system.test_results
