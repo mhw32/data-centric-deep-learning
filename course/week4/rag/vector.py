@@ -38,6 +38,25 @@ def delete_collection(api_key: str, collection_id: str) -> bool:
   return result.success
 
 
+def insert_documents(
+  api_key: str,
+  collection_name: str,
+  documents: List[Dict],
+) -> Dict:
+  r"""Insert documents into the documents.
+  :param api_key: Starpoint API key
+  :param collection_name: Desired name of the collection. Please set this to `dcdl-week4-<YOUR_GITHUB_USERNAME>`.
+  :return: See https://docs.starpoint.ai/create-documents.
+  {
+    collection_id: string,
+    documents: { id: string }
+  }
+  """
+  starpoint = Client(api_key=api_key)
+  result = starpoint.insert(documents=documents, collection_name=collection_name)
+  return result
+
+
 def retrieve_documents(
   api_key: str,
   collection_name: str,

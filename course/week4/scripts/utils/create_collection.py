@@ -1,11 +1,12 @@
 from os.path import join
-from rag.vector import get_my_collection_name, create_collection, delete_collection
-from rag.paths import DATA_DIR
+from rag.vector import get_my_collection_name, create_collection
 from rag.utils import to_json
+from rag.paths import DATA_DIR
 
 
 def main(args):
-  r"""Create a Starpoint collection
+  r"""Create a Starpoint collection. 
+  :note: This will save a file to data/collections that remembers your collection name and ID
   """
   collection_name = get_my_collection_name(args.github_username)
   collection = create_collection(

@@ -1,21 +1,25 @@
 from os import remove
 from os.path import join, isfile
-from rag.vector import get_my_collection_name, create_collection, delete_collection
-from rag.paths import DATA_DIR
+from rag.vector import get_my_collection_name, delete_collection
 from rag.utils import from_json
+from rag.paths import DATA_DIR
 
 
 def main(args):
-  r"""Create a Starpoint collection
+  r"""Deletes a Starpoint collection
+  :note: This will find the collection ID using a file in data/collections.
   """
   collection_name = get_my_collection_name(args.github_username)
   collection_file = join(DATA_DIR, 'collections', f'{collection_name}.json')
+  assert isfile(collection_file), f'Collection file {collection_file} not found.'
   collection = from_json(collection_file)
 
   # Tell starpoint to delete the collection
   success = delete_collection(args.starpoint_api_key, collection['id'])
+  if not success:
+    raise Exception(f'Failed to delete collection. Please check your collection ID')
 
-  if isfile(collection_file):  # Delete the file as well
+  if success and isfile(collection_file):  # Delete the file as well
     remove(collection_file)
 
 
