@@ -1,3 +1,4 @@
 **.ckpt
 log/lightning_logs/
 data_baseline
+data_new
