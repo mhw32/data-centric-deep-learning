@@ -1,0 +1,782 @@
+[
+    {
+        "id": 12,
+        "annotations": [
+            {
+                "id": 10,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "value": {
+                            "choices": [
+                                "Negative"
+                            ]
+                        },
+                        "id": "data-79798",
+                        "from_name": "sentiment",
+                        "to_name": "text",
+                        "type": "choices",
+                        "origin": "prediction"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2024-07-26T16:39:53.528813Z",
+                "updated_at": "2024-07-26T16:39:53.528868Z",
+                "lead_time": 23.446,
+                "prediction": {
+                    "id": 12,
+                    "model_version": "undefined",
+                    "created_ago": "7 minutes",
+                    "result": [
+                        {
+                            "value": {
+                                "choices": [
+                                    "Negative"
+                                ]
+                            },
+                            "id": "data-79798",
+                            "from_name": "sentiment",
+                            "to_name": "text",
+                            "type": "choices"
+                        }
+                    ],
+                    "score": null,
+                    "cluster": null,
+                    "neighbors": null,
+                    "mislabeling": 0.0,
+                    "created_at": "2024-07-26T16:32:03.849822Z",
+                    "updated_at": "2024-07-26T16:32:03.849832Z",
+                    "task": 12
+                },
+                "result_count": 0,
+                "task": 12,
+                "parent_prediction": 12,
+                "parent_annotation": null
+            }
+        ],
+        "file_upload": "24dfd6c8-pre-annotations.json",
+        "drafts": [],
+        "predictions": [
+            12
+        ],
+        "data": {
+            "text": "I had this put on at a salon and loved it..but like others in the review found it peeled off or chipped.  when I did need to remove it, it took numerous cotton balls and remover to get off...gritty texture....why is it 2x more expensive than other OPI products? Or even other nail polish from Burlesque line?"
+        },
+        "meta": {},
+        "created_at": "2024-07-26T16:32:03.215309Z",
+        "updated_at": "2024-07-26T16:39:53.706231Z",
+        "inner_id": 12,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 1,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 1,
+        "updated_by": 1,
+        "comment_authors": []
+    },
+    {
+        "id": 10,
+        "annotations": [
+            {
+                "id": 9,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "value": {
+                            "choices": [
+                                "Positive"
+                            ]
+                        },
+                        "id": "data-32905",
+                        "from_name": "sentiment",
+                        "to_name": "text",
+                        "type": "choices",
+                        "origin": "prediction"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2024-07-26T16:39:23.482610Z",
+                "updated_at": "2024-07-26T16:39:23.482630Z",
+                "lead_time": 11.75,
+                "prediction": {
+                    "id": 10,
+                    "model_version": "undefined",
+                    "created_ago": "7 minutes",
+                    "result": [
+                        {
+                            "value": {
+                                "choices": [
+                                    "Positive"
+                                ]
+                            },
+                            "id": "data-32905",
+                            "from_name": "sentiment",
+                            "to_name": "text",
+                            "type": "choices"
+                        }
+                    ],
+                    "score": null,
+                    "cluster": null,
+                    "neighbors": null,
+                    "mislabeling": 0.0,
+                    "created_at": "2024-07-26T16:32:03.849749Z",
+                    "updated_at": "2024-07-26T16:32:03.849759Z",
+                    "task": 10
+                },
+                "result_count": 0,
+                "task": 10,
+                "parent_prediction": 10,
+                "parent_annotation": null
+            }
+        ],
+        "file_upload": "24dfd6c8-pre-annotations.json",
+        "drafts": [],
+        "predictions": [
+            10
+        ],
+        "data": {
+            "text": "I purchased smaller bottles of this shampoo and conditioner from my hairstylist previously.  I absolutely love it.  Skews my hair so shiny and healthy.  Smells great also."
+        },
+        "meta": {},
+        "created_at": "2024-07-26T16:32:03.215215Z",
+        "updated_at": "2024-07-26T16:39:23.669971Z",
+        "inner_id": 10,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 1,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 1,
+        "updated_by": 1,
+        "comment_authors": []
+    },
+    {
+        "id": 7,
+        "annotations": [
+            {
+                "id": 8,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "value": {
+                            "choices": [
+                                "Positive"
+                            ]
+                        },
+                        "id": "data-60026",
+                        "from_name": "sentiment",
+                        "to_name": "text",
+                        "type": "choices",
+                        "origin": "prediction"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2024-07-26T16:38:43.418108Z",
+                "updated_at": "2024-07-26T16:38:43.418131Z",
+                "lead_time": 7.78,
+                "prediction": {
+                    "id": 7,
+                    "model_version": "undefined",
+                    "created_ago": "6 minutes",
+                    "result": [
+                        {
+                            "value": {
+                                "choices": [
+                                    "Positive"
+                                ]
+                            },
+                            "id": "data-60026",
+                            "from_name": "sentiment",
+                            "to_name": "text",
+                            "type": "choices"
+                        }
+                    ],
+                    "score": null,
+                    "cluster": null,
+                    "neighbors": null,
+                    "mislabeling": 0.0,
+                    "created_at": "2024-07-26T16:32:03.849650Z",
+                    "updated_at": "2024-07-26T16:32:03.849658Z",
+                    "task": 7
+                },
+                "result_count": 0,
+                "task": 7,
+                "parent_prediction": 7,
+                "parent_annotation": null
+            }
+        ],
+        "file_upload": "24dfd6c8-pre-annotations.json",
+        "drafts": [],
+        "predictions": [
+            7
+        ],
+        "data": {
+            "text": "My hair frizzes in the humidity and this spray keeps it straight, smooth and soft.  A great hold"
+        },
+        "meta": {},
+        "created_at": "2024-07-26T16:32:03.215068Z",
+        "updated_at": "2024-07-26T16:38:43.594026Z",
+        "inner_id": 7,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 1,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 1,
+        "updated_by": 1,
+        "comment_authors": []
+    },
+    {
+        "id": 5,
+        "annotations": [
+            {
+                "id": 7,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "value": {
+                            "choices": [
+                                "Positive"
+                            ]
+                        },
+                        "id": "data-39833",
+                        "from_name": "sentiment",
+                        "to_name": "text",
+                        "type": "choices",
+                        "origin": "prediction"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2024-07-26T16:38:34.002273Z",
+                "updated_at": "2024-07-26T16:38:34.002298Z",
+                "lead_time": 11.398,
+                "prediction": {
+                    "id": 5,
+                    "model_version": "undefined",
+                    "created_ago": "6 minutes",
+                    "result": [
+                        {
+                            "value": {
+                                "choices": [
+                                    "Positive"
+                                ]
+                            },
+                            "id": "data-39833",
+                            "from_name": "sentiment",
+                            "to_name": "text",
+                            "type": "choices"
+                        }
+                    ],
+                    "score": null,
+                    "cluster": null,
+                    "neighbors": null,
+                    "mislabeling": 0.0,
+                    "created_at": "2024-07-26T16:32:03.849583Z",
+                    "updated_at": "2024-07-26T16:32:03.849591Z",
+                    "task": 5
+                },
+                "result_count": 0,
+                "task": 5,
+                "parent_prediction": 5,
+                "parent_annotation": null
+            }
+        ],
+        "file_upload": "24dfd6c8-pre-annotations.json",
+        "drafts": [],
+        "predictions": [
+            5
+        ],
+        "data": {
+            "text": "Have been using calamine lotion for awhile now, works great on acne spots, and under $5 a bottle! Available at your local pharmacy :)"
+        },
+        "meta": {},
+        "created_at": "2024-07-26T16:32:03.214970Z",
+        "updated_at": "2024-07-26T16:38:34.201643Z",
+        "inner_id": 5,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 1,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 1,
+        "updated_by": 1,
+        "comment_authors": []
+    },
+    {
+        "id": 4,
+        "annotations": [
+            {
+                "id": 6,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "value": {
+                            "choices": [
+                                "Negative"
+                            ]
+                        },
+                        "id": "data-65278",
+                        "from_name": "sentiment",
+                        "to_name": "text",
+                        "type": "choices",
+                        "origin": "prediction"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2024-07-26T16:38:18.894170Z",
+                "updated_at": "2024-07-26T16:38:18.894192Z",
+                "lead_time": 66.85,
+                "prediction": {
+                    "id": 4,
+                    "model_version": "undefined",
+                    "created_ago": "6 minutes",
+                    "result": [
+                        {
+                            "value": {
+                                "choices": [
+                                    "Negative"
+                                ]
+                            },
+                            "id": "data-65278",
+                            "from_name": "sentiment",
+                            "to_name": "text",
+                            "type": "choices"
+                        }
+                    ],
+                    "score": null,
+                    "cluster": null,
+                    "neighbors": null,
+                    "mislabeling": 0.0,
+                    "created_at": "2024-07-26T16:32:03.849549Z",
+                    "updated_at": "2024-07-26T16:32:03.849558Z",
+                    "task": 4
+                },
+                "result_count": 0,
+                "task": 4,
+                "parent_prediction": 4,
+                "parent_annotation": null
+            }
+        ],
+        "file_upload": "24dfd6c8-pre-annotations.json",
+        "drafts": [],
+        "predictions": [
+            4
+        ],
+        "data": {
+            "text": "I must have ordered this accidentally along with the moisturizer. Seeing $10. cost for a small tube, I checked the size and it is 0.68 fl.oz. not the 0.9 as shown. I feel cheated."
+        },
+        "meta": {},
+        "created_at": "2024-07-26T16:32:03.214921Z",
+        "updated_at": "2024-07-26T16:38:19.069420Z",
+        "inner_id": 4,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 1,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 1,
+        "updated_by": 1,
+        "comment_authors": []
+    },
+    {
+        "id": 2,
+        "annotations": [
+            {
+                "id": 5,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "value": {
+                            "choices": [
+                                "Positive"
+                            ]
+                        },
+                        "id": "data-74466",
+                        "from_name": "sentiment",
+                        "to_name": "text",
+                        "type": "choices",
+                        "origin": "prediction"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2024-07-26T16:37:09.659298Z",
+                "updated_at": "2024-07-26T16:37:09.659317Z",
+                "lead_time": 5.211,
+                "prediction": {
+                    "id": 2,
+                    "model_version": "undefined",
+                    "created_ago": "5 minutes",
+                    "result": [
+                        {
+                            "value": {
+                                "choices": [
+                                    "Positive"
+                                ]
+                            },
+                            "id": "data-74466",
+                            "from_name": "sentiment",
+                            "to_name": "text",
+                            "type": "choices"
+                        }
+                    ],
+                    "score": null,
+                    "cluster": null,
+                    "neighbors": null,
+                    "mislabeling": 0.0,
+                    "created_at": "2024-07-26T16:32:03.849477Z",
+                    "updated_at": "2024-07-26T16:32:03.849488Z",
+                    "task": 2
+                },
+                "result_count": 0,
+                "task": 2,
+                "parent_prediction": 2,
+                "parent_annotation": null
+            }
+        ],
+        "file_upload": "24dfd6c8-pre-annotations.json",
+        "drafts": [],
+        "predictions": [
+            2
+        ],
+        "data": {
+            "text": "I have always used this , Fantastic love love  love it. I highly recommend it to all with dry hands , it makes them so smoothe  !"
+        },
+        "meta": {},
+        "created_at": "2024-07-26T16:32:03.214816Z",
+        "updated_at": "2024-07-26T16:37:09.837090Z",
+        "inner_id": 2,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 1,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 1,
+        "updated_by": 1,
+        "comment_authors": []
+    },
+    {
+        "id": 3,
+        "annotations": [
+            {
+                "id": 4,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "value": {
+                            "choices": [
+                                "Positive"
+                            ]
+                        },
+                        "id": "data-38940",
+                        "from_name": "sentiment",
+                        "to_name": "text",
+                        "type": "choices",
+                        "origin": "prediction"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2024-07-26T16:37:02.210465Z",
+                "updated_at": "2024-07-26T16:37:02.210488Z",
+                "lead_time": 4.95,
+                "prediction": {
+                    "id": 3,
+                    "model_version": "undefined",
+                    "created_ago": "4 minutes",
+                    "result": [
+                        {
+                            "value": {
+                                "choices": [
+                                    "Positive"
+                                ]
+                            },
+                            "id": "data-38940",
+                            "from_name": "sentiment",
+                            "to_name": "text",
+                            "type": "choices"
+                        }
+                    ],
+                    "score": null,
+                    "cluster": null,
+                    "neighbors": null,
+                    "mislabeling": 0.0,
+                    "created_at": "2024-07-26T16:32:03.849515Z",
+                    "updated_at": "2024-07-26T16:32:03.849524Z",
+                    "task": 3
+                },
+                "result_count": 0,
+                "task": 3,
+                "parent_prediction": 3,
+                "parent_annotation": null
+            }
+        ],
+        "file_upload": "24dfd6c8-pre-annotations.json",
+        "drafts": [],
+        "predictions": [
+            3
+        ],
+        "data": {
+            "text": "Soft and gentle fragrance, works well with other scents and perfumes. Very impressed, I have ordered more than once and love the high quality of the lotion and lush feeling it leaves on my skin....I use this everyday after my  shower."
+        },
+        "meta": {},
+        "created_at": "2024-07-26T16:32:03.214870Z",
+        "updated_at": "2024-07-26T16:37:02.385145Z",
+        "inner_id": 3,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 1,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 1,
+        "updated_by": 1,
+        "comment_authors": []
+    },
+    {
+        "id": 6,
+        "annotations": [
+            {
+                "id": 3,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "value": {
+                            "choices": [
+                                "Positive"
+                            ]
+                        },
+                        "id": "data-67007",
+                        "from_name": "sentiment",
+                        "to_name": "text",
+                        "type": "choices",
+                        "origin": "prediction"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2024-07-26T16:36:50.857936Z",
+                "updated_at": "2024-07-26T16:36:50.857959Z",
+                "lead_time": 13.946,
+                "prediction": {
+                    "id": 6,
+                    "model_version": "undefined",
+                    "created_ago": "4 minutes",
+                    "result": [
+                        {
+                            "value": {
+                                "choices": [
+                                    "Positive"
+                                ]
+                            },
+                            "id": "data-67007",
+                            "from_name": "sentiment",
+                            "to_name": "text",
+                            "type": "choices"
+                        }
+                    ],
+                    "score": null,
+                    "cluster": null,
+                    "neighbors": null,
+                    "mislabeling": 0.0,
+                    "created_at": "2024-07-26T16:32:03.849616Z",
+                    "updated_at": "2024-07-26T16:32:03.849625Z",
+                    "task": 6
+                },
+                "result_count": 0,
+                "task": 6,
+                "parent_prediction": 6,
+                "parent_annotation": null
+            }
+        ],
+        "file_upload": "24dfd6c8-pre-annotations.json",
+        "drafts": [],
+        "predictions": [
+            6
+        ],
+        "data": {
+            "text": "Soft and gentle fragrance, works well with other scents and perfumes. Very impressed, I have ordered more than once and love the high quality of the lotion and lush feeling it leaves on my skin....I use this everyday after my  shower."
+        },
+        "meta": {},
+        "created_at": "2024-07-26T16:32:03.215020Z",
+        "updated_at": "2024-07-26T16:36:51.043032Z",
+        "inner_id": 6,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 1,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 1,
+        "updated_by": 1,
+        "comment_authors": []
+    },
+    {
+        "id": 196,
+        "annotations": [
+            {
+                "id": 2,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "value": {
+                            "choices": [
+                                "Positive"
+                            ]
+                        },
+                        "id": "data-39564",
+                        "from_name": "sentiment",
+                        "to_name": "text",
+                        "type": "choices",
+                        "origin": "prediction"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2024-07-26T16:36:29.253369Z",
+                "updated_at": "2024-07-26T16:36:29.253391Z",
+                "lead_time": 28.812,
+                "prediction": {
+                    "id": 196,
+                    "model_version": "undefined",
+                    "created_ago": "4 minutes",
+                    "result": [
+                        {
+                            "value": {
+                                "choices": [
+                                    "Positive"
+                                ]
+                            },
+                            "id": "data-39564",
+                            "from_name": "sentiment",
+                            "to_name": "text",
+                            "type": "choices"
+                        }
+                    ],
+                    "score": null,
+                    "cluster": null,
+                    "neighbors": null,
+                    "mislabeling": 0.0,
+                    "created_at": "2024-07-26T16:32:03.858582Z",
+                    "updated_at": "2024-07-26T16:32:03.858590Z",
+                    "task": 196
+                },
+                "result_count": 0,
+                "task": 196,
+                "parent_prediction": 196,
+                "parent_annotation": null
+            }
+        ],
+        "file_upload": "24dfd6c8-pre-annotations.json",
+        "drafts": [],
+        "predictions": [
+            196
+        ],
+        "data": {
+            "text": "This eyeliner stays put! I like the brand"
+        },
+        "meta": {},
+        "created_at": "2024-07-26T16:32:03.347138Z",
+        "updated_at": "2024-07-26T16:36:29.433509Z",
+        "inner_id": 196,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 1,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 1,
+        "updated_by": 1,
+        "comment_authors": []
+    },
+    {
+        "id": 1,
+        "annotations": [
+            {
+                "id": 1,
+                "completed_by": 1,
+                "result": [
+                    {
+                        "value": {
+                            "choices": [
+                                "Positive"
+                            ]
+                        },
+                        "id": "data-44689",
+                        "from_name": "sentiment",
+                        "to_name": "text",
+                        "type": "choices",
+                        "origin": "prediction"
+                    }
+                ],
+                "was_cancelled": false,
+                "ground_truth": false,
+                "created_at": "2024-07-26T16:34:57.628179Z",
+                "updated_at": "2024-07-26T16:34:57.628200Z",
+                "lead_time": 13.513,
+                "prediction": {
+                    "id": 1,
+                    "model_version": "undefined",
+                    "created_ago": "2 minutes",
+                    "result": [
+                        {
+                            "value": {
+                                "choices": [
+                                    "Positive"
+                                ]
+                            },
+                            "id": "data-44689",
+                            "from_name": "sentiment",
+                            "to_name": "text",
+                            "type": "choices"
+                        }
+                    ],
+                    "score": null,
+                    "cluster": null,
+                    "neighbors": null,
+                    "mislabeling": 0.0,
+                    "created_at": "2024-07-26T16:32:03.849411Z",
+                    "updated_at": "2024-07-26T16:32:03.849444Z",
+                    "task": 1
+                },
+                "result_count": 0,
+                "task": 1,
+                "parent_prediction": 1,
+                "parent_annotation": null
+            }
+        ],
+        "file_upload": "24dfd6c8-pre-annotations.json",
+        "drafts": [],
+        "predictions": [
+            1
+        ],
+        "data": {
+            "text": "Love the Noodle and Boo products...they smell so good! Will definitely be using this product for a long time. Happy baby!"
+        },
+        "meta": {},
+        "created_at": "2024-07-26T16:32:03.214720Z",
+        "updated_at": "2024-07-26T16:34:57.810829Z",
+        "inner_id": 1,
+        "total_annotations": 1,
+        "cancelled_annotations": 0,
+        "total_predictions": 1,
+        "comment_count": 0,
+        "unresolved_comment_count": 0,
+        "last_comment_updated_at": null,
+        "project": 1,
+        "updated_by": 1,
+        "comment_authors": []
+    }
+]
