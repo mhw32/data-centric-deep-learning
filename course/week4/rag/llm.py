@@ -1,9 +1,11 @@
 import openai
+from typing import Optional
 
 
 def query_openai(
   api_key: str,
-  prompt: str,
+  user_prompt: str,
+  system_prompt: Optional[str] = None,
   model: str = "gpt-4o",
   api_type: str = "openai",
   response_format: str = "text",
@@ -11,15 +13,16 @@ def query_openai(
   r"""Query OpenAI to generate a response to a query.
   :param api_key (str): API key for OpenAI
   """
+  messages = [{"role": "user", "content": user_prompt}]
+  if system_prompt is not None:
+    messages.append({"role": "system", "content": system_prompt})
+
   openai.api_key = api_key
   openai.api_type = api_type
   completion = openai.chat.completions.create(
       model=model,
       response_format={"type": response_format},
-      messages=[{"role": "user", "content": prompt}],
+      messages=messages,
   )
   answer = completion.choices[0].message.content
   return answer
-
-
-

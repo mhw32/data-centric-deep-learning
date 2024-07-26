@@ -1,7 +1,7 @@
 from typing import List
 
 
-def get_retrieval_prompt(user_query: str, documents: List[str]) -> str:
+def get_retrieval_prompt(query: str, documents: List[str]) -> str:
   context = '\n\n'.join(documents)
   prompt = f'''
 Answer the question using only the provided context.
@@ -10,7 +10,7 @@ Your answer should be in your own words and be no longer than 50 words.
 
 CONTEXT: {context}
 
-INPUT: {user_query}
+INPUT: {query}
 
 ANSWER:                             
 '''
