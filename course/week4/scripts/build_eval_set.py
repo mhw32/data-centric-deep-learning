@@ -46,9 +46,12 @@ class BuildEvaluationSet(FlowSpec):
     doc_file = join(DATA_DIR, 'documents', self.config.dataset)
     assert isfile(doc_file), f"Document file `data/documents/data-orig.csv` does not exist."
     docs = pd.read_csv(doc_file)
+    num_docs = len(docs)
 
     # Sample a few questions from texts
-    texts = np.random.choice(docs.text.to_numpy(), size=self.config.num_questions, replace=False).tolist()
+    indices = np.random.choice(np.arange(num_docs), size=self.config.num_questions, replace=False)
+    doc_ids = [str(docs.iloc[index].doc_id) for index in indices]
+    texts = [str(docs.iloc[index].text) for index in indices]
 
     # Loop through questions 
     questions: List[str] = []
@@ -68,17 +71,16 @@ class BuildEvaluationSet(FlowSpec):
 
     self.contexts = texts
     self.questions = questions
+    self.doc_ids = doc_ids
     self.next(self.grade_questions)
 
   @step
   def grade_questions(self):
     r"""Use an LLM judge to grade each question and toss anything below a rating of 3.
     """
-    filtered_questions: List[str] = []
-    filtered_contexts: List[str] = []
     ratings: List[int] = []
-
     for i in tqdm(range(self.questions), desc="Grading questions"):
+      rating = 5  # replace me
       # ===========================
       # FILL ME OUT
       # Use `query_openai` to ask an LLM judge to grade if a generated question fits the context.
@@ -88,16 +90,12 @@ class BuildEvaluationSet(FlowSpec):
       rating = query_openai(self.openai_api_key, get_question_judge_prompt(self.questions[i], self.contexts[i]))
       rating = int(rating)
       # ===========================
-      filtered_questions.append(self.questions[i])
-      filtered_contexts.append(self.contexts[i])
       ratings.append(rating)
 
-    assert len(filtered_questions) == len(filtered_contexts) == len(ratings), \
-      f"Mismatch in size. Got {len(filtered_questions)} != {len(filtered_contexts)} != {len(ratings)}."
-    print(f'Filtered {len(self.questions)} questions. Average rating: {np.mean(ratings)}')
+    assert len(self.questions) == len(ratings), \
+      f"Mismatch in size. Got {len(self.questions)} questions != {len(ratings)} ratings."
+    print(f'Average rating: {np.mean(ratings)}')
 
-    self.contexts = filtered_contexts
-    self.questions = filtered_questions
     self.ratings = ratings
     self.next(self.save_questions)
 
@@ -108,8 +106,13 @@ class BuildEvaluationSet(FlowSpec):
     dataset_name, _ = splitext(self.config.dataset)
     makedirs(join(DATA_DIR, 'questions'), exist_ok=True)
     question_file = join(DATA_DIR, f'questions/{dataset_name}.csv')
-
-    dataset = {'context': self.contexts, 'question': self.questions, 'ratings': self.ratings}
+    # Make a dataframe and save it
+    dataset = {
+      'doc_id': self.doc_ids, 
+      'context': self.contexts, 
+      'question': self.questions, 
+      'ratings': self.ratings,
+    }
     dataset = pd.DataFrame(dataset)
     dataset.to_csv(question_file, index=False)
 

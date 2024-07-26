@@ -5,5 +5,6 @@
   "embedding": "all-MiniLM-L6-v2",
   "embedding_dim": 384,
   "eval_metric": "retrieval",
-  "top_k": 3
+  "top_k": 3,
+  "questions": "questions.csv"
 }

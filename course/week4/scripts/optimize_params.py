@@ -7,7 +7,7 @@ from metaflow import FlowSpec, step, Parameter
 from rag.paths import DATA_DIR, LOG_DIR, CONFIG_DIR
 
 
-class OptimizeRAGParams(FlowSpec):
+class OptimizeRagParams(FlowSpec):
   r"""MetaFlow to optimize a RAG hyperparameters by maximizing a retrieval 
   metric on top of an evaluation set.
 
@@ -38,12 +38,12 @@ if __name__ == "__main__":
   """
   To validate this flow, run `python optimize_params.py`. To list
   this flow, run `python optimize_params.py show`. To execute
-  this flow, run `python optimize_params.py run`.
+  this flow, run `python optimize_params.py --max-workers 1 run`.
 
   You may get PyLint errors from `numpy.random`. If so,
   try adding the flag:
 
-    `python optimize_params.py --no-pylint run`
+    `python optimize_params.py --no-pylint --max-workers 1 run`
 
   If you face a bug and the flow fails, you can continue
   the flow at the point of failure:
@@ -52,4 +52,4 @@ if __name__ == "__main__":
   
   You can specify a run id as well.
   """
-  flow = OptimizeRAGParams()
+  flow = OptimizeRagParams()
