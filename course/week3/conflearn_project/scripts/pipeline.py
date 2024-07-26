@@ -164,7 +164,7 @@ class TrainIdentifyReview(FlowSpec):
       # probs_: np.array[float] (shape: |test set|)
       # ===============================================
       system_ = SentimentClassifierSystem(self.config)
-      trainer_ = Trainer(max_epochs=self.trainer.max_epochs) # change to 1 for debugging
+      trainer_ = Trainer(max_epochs=self.config.train.optimizer.max_epochs) # change to 1 for debugging
 
       print(f"\t## Training fold {i}")
       X_train = torch.tensor(X[train_index, :])
