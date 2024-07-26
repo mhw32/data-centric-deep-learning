@@ -27,6 +27,17 @@ def create_collection(api_key: str, collection_name: str, dimensionality: int = 
   return result
 
 
+def delete_collection(api_key: str, collection_id: str) -> bool:
+  r"""Delete a collection in Starpoint.
+  :param api_key: Starpoint API key
+  :param collection_id: ID for the collection (given to you on creation)
+  :return: success
+  """
+  client = Client(api_key=api_key)
+  result = client.delete_collection(collection_id=collection_id)
+  return result.success
+
+
 def retrieve_documents(
   api_key: str,
   collection_name: str,

@@ -75,4 +75,4 @@ if __name__ == "__main__":
   parser.add_argument('--starpoint-api-key', type=str, default=env['STARPOINT_API_KEY'], help='Starpoint API key')
   args = parser.parse_args()
 
-  main()
+  main(args)
