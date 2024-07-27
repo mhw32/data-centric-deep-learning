@@ -12,8 +12,8 @@ from metaflow import FlowSpec, step, Parameter
 
 from rag.llm import query_openai
 from rag.prompts import get_question_prompt, get_question_judge_prompt, get_hyde_response_prompt
-from rag.dataset import chunk_document
-from rag.paths import DATA_DIR, CONFIG_DIR
+from rag.dataset import chunk_document, load_documents
+from rag.paths import DATA_DIR
 
 load_dotenv()
 
@@ -26,7 +26,6 @@ class BuildEvaluationSet(FlowSpec):
   ---------
   config (str, default: configs/eval.json): path to a configuration file
   """
-  config_path = Parameter('config', help = 'path to config file', default=join(CONFIG_DIR, 'eval.json'))
   openai_api_key = Parameter('openai_api_key', help = 'OpenAI API key', default=env['OPENAI_API_KEY'])
 
   @step
@@ -44,21 +43,16 @@ class BuildEvaluationSet(FlowSpec):
   def write_questions(self):
     r"""Write questions to use as an evaluation set.
     """
-    doc_file = join(DATA_DIR, 'documents', self.config.dataset)
-    assert isfile(doc_file), f"Document file `data/documents/data-orig.csv` does not exist."
-    docs = pd.read_csv(doc_file)
+    docs = load_documents()
     num_docs = len(docs)
-
-    # Sample a few questions from texts
-    indices = np.random.choice(np.arange(num_docs), size=self.config.num_questions, replace=False)
 
     # Loop through questions 
     questions: List[str] = []
     contexts: List[str] = []
     doc_ids: List[str] = [] # saves the original doc_id
-    for index in tqdm(indices, desc="Writing questions"):
-      text = str(docs.iloc[index].text)
-      doc_id = str(docs.iloc[index].doc_id)
+    for i in tqdm(num_docs, desc="Writing questions"):
+      text = str(docs.iloc[i].text)
+      doc_id = str(docs.iloc[i].doc_id)
       # Convert the text into chunks so we can write a question about each chunk
       # This funciton groups each 
       chunks = chunk_document(text)

@@ -1,14 +1,17 @@
 import pandas as pd
-from typing import List
+from typing import List, Optional
 from glob import glob
 from os.path import join, basename, splitext
 from .paths import DATA_DIR
 
 
-def load_documents() -> pd.DataFrame:
+def load_documents(override_doc_dir: Optional[str] = None) -> pd.DataFrame:
   r"""Load in all documents. Use filename as doc ids.
   """
-  doc_dir = join(DATA_DIR, 'documents')
+  if override_doc_dir:
+    doc_dir = override_doc_dir
+  else:
+    doc_dir = join(DATA_DIR, 'documents/summer')
   doc_files = glob(join(doc_dir, '*.md'))  # find all markdown files
 
   doc_ids, texts = [], []

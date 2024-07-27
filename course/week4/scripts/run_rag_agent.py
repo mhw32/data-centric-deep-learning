@@ -1,29 +1,24 @@
-from os.path import join
-from typing import List
 from sentence_transformers import SentenceTransformer
 
-from rag.utils import pc, pr, pb, load_config
+from rag.utils import pc, pr, pb
 from rag.llm import query_openai, get_welcome_message
 from rag.prompts import get_persona, get_retrieval_prompt, get_hyde_response_prompt
 from rag.vector import get_my_collection_name, retrieve_documents
-from rag.paths import CONFIG_DIR
 
 
 def main(args):
   r"""Initialize a RAG agent and have a conversation with it. 
   """
-  collection_name = get_my_collection_name(args.github_username)
   system_prompt = get_persona()
-
-  config = load_config(args.config)
-  embedding_model = SentenceTransformer(config.embedding)
+  collection_name = get_my_collection_name(env['GITHUB_USERNAME'])
+  embedding_model = SentenceTransformer(args.embedding)
 
   pc(get_welcome_message())
   while True:
     query = input("Type a message: ")
     pb(f'USER: {query}')
 
-    if config.hyde_embeddings:
+    if args.hyde:
       # If we use hyde embeddings, then we need to embed the hypothetical 
       # answer instead of the question
       hypo_answer = query_openai(args.openai_api_key, get_hyde_response_prompt(query))
@@ -36,8 +31,8 @@ def main(args):
       collection_name=collection_name,
       query=query,  # regardless of hyde, keep query here
       query_embedding=embedding,
-      top_k=config.top_k,
-      text_search_weight=config.text_search_weight,
+      top_k=3,
+      text_search_weight=args.text_search_weight,
     )
     docs = [result['metadata']['description'] for result in results]
     response = query_openai(
@@ -58,7 +53,9 @@ if __name__ == "__main__":
 
   import argparse
   parser = argparse.ArgumentParser()
-  parser.add_argument('--config', type=str, default=join(CONFIG_DIR, 'rag.json'), help='Configuration file')
+  parser.add_argument('--embedding', type=str, default='all-MiniLM-L6-v2', help='Embedding to use (default: all-MiniLM-L6-v2)')
+  parser.add_argument('--hyde', action='store_true', default=False, help='Use hyde embeddings (default: False)')
+  parser.add_argument('--text-search-weight', type=float, default=0.5, help='Weight between lexical and semantic search (default: 0.5)')
   parser.add_argument('--openai-api-key', type=str, default=env['OPENAI_API_KEY'], help='OpenAI API key')
   parser.add_argument('--starpoint-api-key', type=str, default=env['STARPOINT_API_KEY'], help='Starpoint API key')
   args = parser.parse_args()

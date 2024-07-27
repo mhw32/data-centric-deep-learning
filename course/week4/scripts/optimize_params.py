@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from metaflow import FlowSpec, step, Parameter
 from sentence_transformers import SentenceTransformer
 
-from rag.paths import DATA_DIR, CONFIG_DIR
+from rag.paths import DATA_DIR
 from rag.vector import retrieve_documents, get_my_collection_name
 
 load_dotenv()
@@ -25,10 +25,19 @@ class OptimizeRagParams(FlowSpec):
 
   Arguments
   ---------
-  config (str, default: configs/optim.json): path to a configuration file
+  questions_file (str, default: data/questions/questions.csv): path to generated questions CSV
+  starpoint_api_key (str, default: env['STARPOINT_API_KEY']): Starpoint API key
   """
-  config_path = Parameter('config', help = 'path to config file', default=join(CONFIG_DIR, 'optim.json'))
-  starpoint_api_key = Parameter('starpoint_api_key', help = 'Starpoint API key', default=env['STARPOINT_API_KEY'])
+  questions_file = Parameter(
+    'questions_file', 
+    help = 'Path to generated questions', 
+    default = join(DATA_DIR, 'questions/questions.csv'),
+  )
+  starpoint_api_key = Parameter(
+    'starpoint_api_key', 
+    help = 'Starpoint API key', 
+    default = env['STARPOINT_API_KEY'],
+  )
 
   @step
   def start(self):
@@ -81,11 +90,11 @@ class OptimizeRagParams(FlowSpec):
     """
     # Load the questions CSV containing generated questions and the 
     # doc id used to generate that question.
-    questions = pd.read_csv(join(DATA_DIR, 'questions', self.config.questions))
+    questions = pd.read_csv(self.questions_file)
 
     # Use this to retrieve documents
     collection_name = get_my_collection_name(
-      self.config.github_username, 
+      env['GITHUB_USERNAME'],
       embedding=self.config.embedding, 
       hyde=self.config.hyde_embeddings,
     )

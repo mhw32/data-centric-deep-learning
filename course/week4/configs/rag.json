@@ -1,7 +1,0 @@
-{
-  "github_username": "mhw32",
-  "top_k": 3,
-  "text_search_weight": 0.5,
-  "embedding": "all-MiniLM-L6-v2",
-  "hyde_embeddings": false
-}

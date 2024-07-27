@@ -9,7 +9,7 @@ def main(args):
   r"""Deletes a Starpoint collection
   :note: This will find the collection ID using a file in data/collections.
   """
-  collection_name = get_my_collection_name(args.github_username, embedding=args.embedding, hyde=args.hyde)
+  collection_name = get_my_collection_name(env['GITHUB_USERNAME'], embedding=args.embedding, hyde=args.hyde)
   collection_file = join(DATA_DIR, 'collections', f'{collection_name}.json')
   assert isfile(collection_file), f'Collection file {collection_file} not found.'
   collection = from_json(collection_file)
