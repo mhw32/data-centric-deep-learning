@@ -63,20 +63,3 @@ RATING:
 """
   return prompt
 
-
-def get_response_judge_prompt(question: str, response: str) -> str:
-  # Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena
-  # https://arxiv.org/abs/2306.05685
-  prompt = f"""Please act as an impartial judge and evaluate the quality of the response provided by an AI assistant to the user question displayed below. 
-Your evaluation should consider factors such as the helpfulness, relevance, accuracy, depth, creativity, and level of detail of the response. 
-Give your answer on a scale of 1 to 5, where 1 means that the repsonse does not answer question at all, and 5 means that the response clearly and unambiguously answers the question.
-
-QUESTION: {question}
-
-RESPONSE: {response}
-
-EXPLANATION: 
-
-RATING:
-"""  
-  return prompt

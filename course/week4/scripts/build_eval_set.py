@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from metaflow import FlowSpec, step, Parameter
 
 from rag.llm import query_openai
-from rag.prompts import get_question_prompt, get_question_judge_prompt
+from rag.prompts import get_question_prompt, get_question_judge_prompt, get_hyde_response_prompt
 from rag.paths import DATA_DIR, CONFIG_DIR
 
 load_dotenv()
@@ -64,10 +64,11 @@ class BuildEvaluationSet(FlowSpec):
       # Save the generated question (as a string) into the `question` variable.
       question = query_openai(self.openai_api_key, get_question_prompt(texts[i]))
       # ===========================
+      assert len(question) > 0, f"Did you complete the coding section in `write_questions`?"
       questions.append(question)
 
     assert len(questions) == len(texts), f"Mismatch in size. Got {len(questions)} != {len(texts)}."
-    print(f'Written {len(questions)} questions.')
+    print(f'Wrote {len(questions)} questions.')
 
     self.contexts = texts
     self.questions = questions
@@ -80,7 +81,7 @@ class BuildEvaluationSet(FlowSpec):
     """
     ratings: List[int] = []
     for i in tqdm(range(self.questions), desc="Grading questions"):
-      rating = 5  # replace me
+      rating = -1
       # ===========================
       # FILL ME OUT
       # Use `query_openai` to ask an LLM judge to grade if a generated question fits the context.
@@ -90,6 +91,7 @@ class BuildEvaluationSet(FlowSpec):
       rating = query_openai(self.openai_api_key, get_question_judge_prompt(self.questions[i], self.contexts[i]))
       rating = int(rating)
       # ===========================
+      assert rating > 0, f"Did you complete the coding section in `grade_questions`?"
       ratings.append(rating)
 
     assert len(self.questions) == len(ratings), \
@@ -97,6 +99,30 @@ class BuildEvaluationSet(FlowSpec):
     print(f'Average rating: {np.mean(ratings)}')
 
     self.ratings = ratings
+    self.next(self.write_hypothetical_answers)
+
+  @step
+  def write_hypothetical_answers(self):
+    r"""We will want to explore hyde embeddings. To do that, we need to generate short
+    hypothetical answers to these questions.
+    """
+    hypo_answers: List[str] = []
+    for i in tqdm(range(self.questions), desc="Writing questions"):
+      hypo_answer = ""
+      # ===========================
+      # FILL ME OUT
+      # Use `query_openai` to write a short answer to each question.
+      # See `rag/prompts` for a bank of relevant prompts to use. You may edit any prompts in there.
+      hypo_answer = query_openai(self.openai_api_key, get_hyde_response_prompt(self.questions[i]))
+      # ===========================
+      assert len(hypo_answer) > 0, f"Did you complete the coding section in `write_hypothetical_answers`?"
+      hypo_answers.append(hypo_answer)
+
+    assert len(self.questions) == len(hypo_answers), \
+      f"Mismatch in size. Got {len(self.questions)} questions != {len(hypo_answers)} hypothetical answers."
+    print(f'Wrote {len(hypo_answers)} hypothetical answers.')
+
+    self.hypo_answers = hypo_answers
     self.next(self.save_questions)
 
   @step
@@ -112,6 +138,7 @@ class BuildEvaluationSet(FlowSpec):
       'context': self.contexts, 
       'question': self.questions, 
       'ratings': self.ratings,
+      'hypo_answers': self.hypo_answers,
     }
     dataset = pd.DataFrame(dataset)
     dataset.to_csv(question_file, index=False)
