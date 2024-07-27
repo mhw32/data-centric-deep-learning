@@ -12,7 +12,7 @@ from metaflow import FlowSpec, step, Parameter
 
 from rag.llm import query_openai
 from rag.prompts import get_question_prompt, get_question_judge_prompt
-from rag.paths import DATA_DIR, LOG_DIR, CONFIG_DIR
+from rag.paths import DATA_DIR, CONFIG_DIR
 
 load_dotenv()
 

@@ -32,3 +32,14 @@ def get_welcome_message() -> str:
   """
   message = "Hi there! I'm an AI assistant to help answer your questions. How can I help?"
   return message
+
+
+def embedding_name_to_dim(name: str) -> int:
+  r"""Map embedding name to dimension.
+  :note: We only support two for this project
+  """
+  mapping = {
+    'all-MiniLM-L6-v2': 384,
+    'thenlper/gte-small': 384,
+  }
+  return mapping[name]

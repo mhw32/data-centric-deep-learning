@@ -2,6 +2,5 @@
   "github_username": "mhw32",
   "text_search_weight": 0.5,
   "embedding": "all-MiniLM-L6-v2",
-  "embedding_dim": 384,
   "top_k": 3
 }
