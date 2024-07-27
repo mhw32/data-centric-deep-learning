@@ -1,0 +1,11 @@
+The act of swimming dates to prehistoric times, but it wasn’t until the 19th century that it became widely practiced as a competitive sport. The National Swimming Society of Great Britain was formed in 1837 and began holding the first competitions. At the time, most swimmers used the breaststroke, or a form of it. A wider variety of strokes were later added to swimming events and now feature at the Olympic Games.
+
+## Brief Overview of the Rules
+
+At the Olympic Games, swimming events are held in a pool measuring 50 metres in length. The four strokes of Olympic swimming events—for both individual and relay races—are breaststroke, butterfly, backstroke and front crawl; the front crawl is predominantly used in freestyle races, and as such the term freestyle is often used as a synonym for front crawl. A fifth race, the mixed medley, involves all four strokes, with swimmers switching between them. The distances also vary, with different skills needed for a 50m race to a 1500m event. Explosivity, endurance, strength and technique are all essential qualities for swimmers.
+
+## Olympic History
+
+Swimming has been present at every Olympic Games of the modern era. Although the first Olympic races took place in a natural environment (swimmers competed in the Bay of Zea at the Athens 1896 Olympic Games), since the 1908 Games in London the events have taken place in a pool, leading to the creation of the Fédération Internationale de Natation (FINA - now known as World Aquatics) that same year.
+
+Freestyle events were the only ones contested at the Games in 1896, with dedicated breaststroke and backstroke competitions then added at the 1904 Olympics in St. Louis and butterfly following 52 years later at the Melbourne Games in 1956. Women’s swimming joined the Olympic programme in 1912 with two events, but today the events of the women’s and men’s swimming competitions at the Games are identical. Olympic swimming has been dominated by athletes representing the United States, who have won over 250 gold medals.
