@@ -2,11 +2,13 @@ from typing import List, Dict
 from starpoint.db import Client
 
 
-def get_my_collection_name(github_username: str) -> str:
+def get_my_collection_name(github_username: str, embedding: str = 'all-MiniLM-L6-v2', hyde: bool = False) -> str:
   r"""Helper function to return collection name.
   :note: All learners will be sharing an API key so it is important everyone has different collection names.
   """
-  return f"dcdl-week4-{github_username}"
+  appendix = "-hyde" if hyde else ""
+  embedding = embedding.replace('/', '-')
+  return f"dcdl-week4-{github_username}-{embedding.lower()}{appendix}"
 
 
 def create_collection(api_key: str, collection_name: str, dimensionality: int = 768) -> Dict:

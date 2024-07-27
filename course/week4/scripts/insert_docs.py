@@ -14,7 +14,11 @@ def main(args):
   """
   assert isfile(args.documents), f'Documents file {args.documents} does not exist'
   config = load_config(args.config)
-  collection_name = get_my_collection_name(config.github_username)
+  collection_name = get_my_collection_name(
+    config.github_username, 
+    embedding=config.embedding, 
+    hyde=config.hyde_embeddings,
+  )
 
   # Load raw documents as a Pandas Dataframe with two columns
   # - doc_id: Document ID 

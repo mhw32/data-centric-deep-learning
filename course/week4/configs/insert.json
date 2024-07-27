@@ -1,4 +1,5 @@
 {
   "github_username": "mhw32",
-  "embedding": "all-MiniLM-L6-v2"
+  "embedding": "all-MiniLM-L6-v2",
+  "hyde_embeddings": false
 }

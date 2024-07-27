@@ -84,7 +84,11 @@ class OptimizeRagParams(FlowSpec):
     questions = pd.read_csv(join(DATA_DIR, 'questions', self.config.questions))
 
     # Use this to retrieve documents
-    collection_name = get_my_collection_name(self.config.github_username)
+    collection_name = get_my_collection_name(
+      self.config.github_username, 
+      embedding=self.config.embedding, 
+      hyde=self.config.hyde_embeddings,
+    )
     embedding_model = SentenceTransformer(hparam.embedding)
 
     hits = 0
