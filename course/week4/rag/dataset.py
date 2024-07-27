@@ -28,8 +28,8 @@ def chunk_document(text: str) -> List[str]:
   Do this by splitting between H2 headers (`##`).
   """
   chunks: List[str] = []
-  # ===========================
-  # FILL ME OUT
-  # ===========================
-  assert len(chunks) > 0, f"Remember to complete `chunk_document`."
+  # In generating questions, we typically do not want to provide the whole 
+  # document. We would prefer to break the document into semantic chunks to
+  # be able to generate a question for each chunk.
+  chunks = [chunk.strip() for chunk in text.split('##')]
   return chunks

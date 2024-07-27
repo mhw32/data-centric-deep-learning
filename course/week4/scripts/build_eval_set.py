@@ -12,6 +12,7 @@ from metaflow import FlowSpec, step, Parameter
 
 from rag.llm import query_openai
 from rag.prompts import get_question_prompt, get_question_judge_prompt, get_hyde_response_prompt
+from rag.dataset import chunk_document
 from rag.paths import DATA_DIR, CONFIG_DIR
 
 load_dotenv()
@@ -50,27 +51,35 @@ class BuildEvaluationSet(FlowSpec):
 
     # Sample a few questions from texts
     indices = np.random.choice(np.arange(num_docs), size=self.config.num_questions, replace=False)
-    doc_ids = [str(docs.iloc[index].doc_id) for index in indices]
-    texts = [str(docs.iloc[index].text) for index in indices]
 
     # Loop through questions 
     questions: List[str] = []
-    for i in tqdm(range(texts), desc="Writing questions"):
-      question = ""
-      # ===========================
-      # FILL ME OUT
-      # Use `query_openai` to generate a question from the document text `texts[i]`. 
-      # See `rag/prompts` for a bank of relevant prompts to use. You may edit any prompts in there.
-      # Save the generated question (as a string) into the `question` variable.
-      question = query_openai(self.openai_api_key, get_question_prompt(texts[i]))
-      # ===========================
-      assert len(question) > 0, f"Did you complete the coding section in `write_questions`?"
-      questions.append(question)
+    contexts: List[str] = []
+    doc_ids: List[str] = [] # saves the original doc_id
+    for index in tqdm(indices, desc="Writing questions"):
+      text = str(docs.iloc[index].text)
+      doc_id = str(docs.iloc[index].doc_id)
+      # Convert the text into chunks so we can write a question about each chunk
+      # This funciton groups each 
+      chunks = chunk_document(text)
+      for chunk in chunks:
+        question = ""
+        # ===========================
+        # FILL ME OUT
+        # Use `query_openai` to generate a question from the chunk text `chunk`. 
+        # See `rag/prompts` for a bank of relevant prompts to use. You may edit any prompts in there.
+        # Save the generated question (as a string) into the `question` variable.
+        question = query_openai(self.openai_api_key, get_question_prompt(chunk))
+        # ===========================
+        assert len(question) > 0, f"Did you complete the coding section in `write_questions`?"
+        questions.append(question)
+        doc_ids.append(doc_id) # save the doc id for each 
+        contexts.append(chunk) # save chunk used to gen question
 
-    assert len(questions) == len(texts), f"Mismatch in size. Got {len(questions)} != {len(texts)}."
+    assert len(questions) == len(contexts), f"Mismatch in size. Got {len(questions)} != {len(contexts)}."
     print(f'Wrote {len(questions)} questions.')
 
-    self.contexts = texts
+    self.contexts = contexts
     self.questions = questions
     self.doc_ids = doc_ids
     self.next(self.grade_questions)

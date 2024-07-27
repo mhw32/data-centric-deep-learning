@@ -16,7 +16,6 @@ Please copy the `.env.template` to a `.env` file.
 
 There is code for you to complete in the following files
 
-- `rag/dataset.py`
 - `scripts/build_eval_set.py`
 - `scripts/insert_docs.py`
 - `scripts/optimizer_params.py`
