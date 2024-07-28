@@ -42,7 +42,7 @@ def main(args):
     )
 
     for i, doc in enumerate(docs):
-      pr(f'DOC #{i}: {doc}')
+      pr(f'DOC #{i}: {doc[:100]}...')
     pc(f'ASSISTANT: {response}')
 
 
