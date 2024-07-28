@@ -69,15 +69,7 @@ class OptimizeRagParams(FlowSpec):
     # - whether to use hyde embeddings or question embeddings
     # In total this is searching over 8 configurations. In practice, we may search
     # over 100,000s but this should illustruate the point.
-    for embedding in ['all-MiniLM-L6-v2', 'thenlper/gte-small']:
-      for text_search_weight in [0, 0.5]:
-        for hyde_embeddings in [True, False]:
-          hparam = DotMap({
-            "embedding": embedding,
-            "text_search_weight": text_search_weight,
-            "hyde_embeddings": hyde_embeddings,
-          })
-          hparams.append(hparam)
+    # TODO
     # ===========================
     assert len(hparams) > 0, "Remember to complete the code in `get_search_space`"
     assert len(hparams) == 8, "You should have 8 configurations" 
@@ -114,18 +106,7 @@ class OptimizeRagParams(FlowSpec):
       #      the three hyperparameters in `hparams` to do this.
       #   2. Track if the correct document appears in the top 3 retrieved documents.
       #      +1 to `hits` if it does. +0 to `hits` if not.
-      embedding = embedding_model.encode(question).tolist()
-      results = retrieve_documents(
-        self.starpoint_api_key, 
-        collection_name, 
-        question, 
-        embedding,
-        top_k=1, 
-        text_search_weight=self.input.text_search_weight,
-      )
-      retrieved_ids = [result['metadata']['doc_id'] for result in results]
-      if gt_id in retrieved_ids:
-        hits += 1
+      # TODO
       # ===========================
 
     hit_rate = hits / float(len(questions))

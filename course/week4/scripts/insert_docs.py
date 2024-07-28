@@ -48,19 +48,7 @@ def main(args):
     # }
     # Please add the document ID to the metadata under the key `doc_id`.
     # Please see docs here: https://docs.starpoint.ai/create-documents 
-    text = raw.text[i]
-    doc_id = raw.doc_id[i]
-    embedding = embedding_model.encode(text).tolist()
-    doc = {
-      "embeddings": {
-        "values": embedding,
-        "dimensionality": embedding_dim,
-      },
-      "metadata": {
-        "doc_id": doc_id,
-        "text": text,
-      }
-    }
+    # TODO
     # ===========================
     assert len(doc) > 0, f"Did you complete the code in `insert_docs.py`?"
     documents.append(doc)
