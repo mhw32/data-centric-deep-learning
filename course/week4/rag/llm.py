@@ -17,11 +17,8 @@ def query_openai(
     messages.append({"role": "system", "content": system_prompt})
   openai.api_key = api_key
   openai.api_type = api_type
-  response = openai.ChatCompletion.create(  # 0.28.x syntax
-      model=model,
-      messages=messages,
-  )
-  answer = response['choices'][0]['message']['content']
+  response = openai.chat.completions.create(model=model, messages=messages)
+  answer = response.choices[0].message.content
   return answer
 
 
