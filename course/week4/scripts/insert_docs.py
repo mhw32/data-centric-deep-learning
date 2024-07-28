@@ -29,7 +29,7 @@ def main(args):
   print(f'Loaded the {args.embedding} model.')
 
   documents = []
-  for i in tqdm(range(len(raw))):
+  for i in tqdm(range(len(raw)), desc='Inserting into db'):
     doc = ""
     # ===========================
     # FILL ME OUT

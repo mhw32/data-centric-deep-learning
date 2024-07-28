@@ -50,11 +50,11 @@ class BuildEvaluationSet(FlowSpec):
     questions: List[str] = []
     contexts: List[str] = []
     doc_ids: List[str] = [] # saves the original doc_id
-    for i in tqdm(num_docs, desc="Writing questions"):
+    for i in tqdm(range(num_docs), desc="Writing questions"):
       text = str(docs.iloc[i].text)
       doc_id = str(docs.iloc[i].doc_id)
-      # Convert the text into chunks so we can write a question about each chunk
-      # This funciton groups each 
+      # Convert the text into chunks so our question is about a specific chunk.
+      # This way we get more granular questions than if we asked about the full doc.
       chunks = chunk_document(text)
       for chunk in chunks:
         question = ""
@@ -83,18 +83,22 @@ class BuildEvaluationSet(FlowSpec):
     r"""Use an LLM judge to grade each question and toss anything below a rating of 3.
     """
     ratings: List[int] = []
-    for i in tqdm(range(self.questions), desc="Grading questions"):
+    for i in tqdm(range(len(self.questions)), desc="Grading questions"):
       rating = -1
       # ===========================
       # FILL ME OUT
       # Use `query_openai` to ask an LLM judge to grade if a generated question fits the context.
       # See `rag/prompts` for a bank of relevant prompts to use. You may edit any prompts in there.
       # Make sure the response is an integer. 
-      # If the response is not castable as an integer, skip the question.
+      # HINT: LLM are not perfect. When you try to cast to an integer, wrap it in a try/catch statement.
+      #       Set the rating to 0 if integer casting fails.
       rating = query_openai(self.openai_api_key, get_question_judge_prompt(self.questions[i], self.contexts[i]))
-      rating = int(rating)
+      try:
+        rating = int(rating)
+      except:
+        rating = 0
       # ===========================
-      assert rating > 0, f"Did you complete the coding section in `grade_questions`?"
+      assert rating >= 0, f"Did you complete the coding section in `grade_questions`?"
       ratings.append(rating)
 
     assert len(self.questions) == len(ratings), \
@@ -110,7 +114,7 @@ class BuildEvaluationSet(FlowSpec):
     hypothetical answers to these questions.
     """
     hypo_answers: List[str] = []
-    for i in tqdm(range(self.questions), desc="Writing questions"):
+    for i in tqdm(range(len(self.questions)), desc="Writing answers"):
       hypo_answer = ""
       # ===========================
       # FILL ME OUT
@@ -132,9 +136,8 @@ class BuildEvaluationSet(FlowSpec):
   def save_questions(self):
     r"""Save questions to `data/questions`.
     """
-    dataset_name, _ = splitext(self.config.dataset)
     makedirs(join(DATA_DIR, 'questions'), exist_ok=True)
-    question_file = join(DATA_DIR, f'questions/{dataset_name}.csv')
+    question_file = join(DATA_DIR, f'questions/questions.csv')
     # Make a dataframe and save it
     dataset = {
       'doc_id': self.doc_ids, 

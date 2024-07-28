@@ -79,15 +79,17 @@ class OptimizeRagParams(FlowSpec):
           })
           hparams.append(hparam)
     # ===========================
-    assert len(hparams) > 0, f"Remember to complete the code in `get_search_space`"
+    assert len(hparams) > 0, "Remember to complete the code in `get_search_space`"
+    assert len(hparams) == 8, "You should have 8 configurations" 
     self.hparams = hparams
     self.next(self.optimize, foreach='hparams')
 
   @step 
-  def optimize(self, hparam: DotMap):
+  def optimize(self):
     r"""Compute retrieval accuracy.
     :param hparam: Hyperparameter for this RAG retrieval system
     """
+    print(f'Evaluating configuration: {self.input}')
     # Load the questions CSV containing generated questions and the 
     # doc id used to generate that question.
     questions = pd.read_csv(self.questions_file)
@@ -95,10 +97,10 @@ class OptimizeRagParams(FlowSpec):
     # Use this to retrieve documents
     collection_name = get_my_collection_name(
       env['GITHUB_USERNAME'],
-      embedding=hparam.embedding, 
-      hyde=hparam.hyde_embeddings,
+      embedding=self.input.embedding, 
+      hyde=self.input.hyde_embeddings,
     )
-    embedding_model = SentenceTransformer(hparam.embedding)
+    embedding_model = SentenceTransformer(self.input.embedding)
 
     hits = 0
     for i in tqdm(range(len(questions))):
@@ -118,17 +120,17 @@ class OptimizeRagParams(FlowSpec):
         collection_name, 
         question, 
         embedding,
-        top_k=3, 
-        text_search_weight=hparam.text_search_weight,
+        top_k=1, 
+        text_search_weight=self.input.text_search_weight,
       )
-      retrieved_ids = [result['metadata']['metadata']['doc_id'] for result in results]
+      retrieved_ids = [result['metadata']['doc_id'] for result in results]
       if gt_id in retrieved_ids:
         hits += 1
       # ===========================
 
     hit_rate = hits / float(len(questions))
     self.hit_rate = hit_rate  # save to class
-    self.hparam = hparam
+    self.hparam = self.input
     self.next(self.find_best)
 
   @step
