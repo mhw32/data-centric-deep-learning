@@ -95,8 +95,8 @@ class OptimizeRagParams(FlowSpec):
     # Use this to retrieve documents
     collection_name = get_my_collection_name(
       env['GITHUB_USERNAME'],
-      embedding=self.config.embedding, 
-      hyde=self.config.hyde_embeddings,
+      embedding=hparam.embedding, 
+      hyde=hparam.hyde_embeddings,
     )
     embedding_model = SentenceTransformer(hparam.embedding)
 

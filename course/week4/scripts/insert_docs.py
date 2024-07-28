@@ -14,7 +14,7 @@ def main(args):
   collection_name = get_my_collection_name(
     env['GITHUB_USERNAME'],
     embedding=args.embedding, 
-    hyde=args.hyde_embeddings,
+    hyde=args.hyde,
   )
 
   # Load raw documents as a Pandas Dataframe with two columns
@@ -58,6 +58,7 @@ def main(args):
       },
       "metadata": {
         "doc_id": doc_id,
+        "text": text,
       }
     }
     # ===========================

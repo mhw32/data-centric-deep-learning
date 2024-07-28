@@ -8,7 +8,6 @@ def query_openai(
   system_prompt: Optional[str] = None,
   model: str = "gpt-3.5-turbo",
   api_type: str = "openai",
-  response_format: str = "text",
 ) -> str:
   r"""Query OpenAI to generate a response to a query.
   :param api_key (str): API key for OpenAI
@@ -18,12 +17,11 @@ def query_openai(
     messages.append({"role": "system", "content": system_prompt})
   openai.api_key = api_key
   openai.api_type = api_type
-  completion = openai.chat.completions.create(
+  response = openai.ChatCompletion.create(  # 0.28.x syntax
       model=model,
-      response_format={"type": response_format},
       messages=messages,
   )
-  answer = completion.choices[0].message.content
+  answer = response['choices'][0]['message']['content']
   return answer
 
 

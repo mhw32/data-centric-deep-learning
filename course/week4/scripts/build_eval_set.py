@@ -6,7 +6,7 @@ from tqdm import tqdm
 from typing import List
 from os import makedirs
 from os import environ as env
-from os.path import join, isfile, splitext
+from os.path import join, splitext
 from dotenv import load_dotenv
 from metaflow import FlowSpec, step, Parameter
 
