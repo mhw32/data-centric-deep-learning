@@ -13,7 +13,7 @@ from metaflow import FlowSpec, step, Parameter
 from fashion.system import FashionDataModule, FashionClassifierSystem
 from fashion.system import ProductionDataset
 from fashion.utils import to_json
-from fashion.paths import CONFIG_DIR, LOG_DIR, CHECKPOINT_DIR, DATA_DIR
+from fashion.paths import LOG_DIR, CHECKPOINT_DIR, DATA_DIR
 
 
 class TestFlow(FlowSpec):
@@ -26,8 +26,7 @@ class TestFlow(FlowSpec):
   test (str, default: offline)
   checkpoint (str, default: ./checkpoints/model.ckpt)
   """
-  config_path = Parameter('config', help='path to config file', default = join(CONFIG_DIR, 'test.json'))
-  test_type = Parameter('test', help='test type to run', default = 'production') # offline
+  test_type = Parameter('test_type', help='test type to run', default = 'production') # offline
   checkpoint_path = Parameter('checkpoint', help = 'path to checkpoint file', default = join(CHECKPOINT_DIR, 'model.ckpt'))
 
   @step
@@ -38,14 +37,6 @@ class TestFlow(FlowSpec):
     random.seed(42)
     np.random.seed(42)
     torch.manual_seed(42)
-
-    self.next(self.init_system)
-
-  @step
-  def init_system(self):
-    r"""Loads a trained deep learning model.
-    """
-    self.system = FashionClassifierSystem.load_from_checkpoint(self.checkpoint_path)
 
     self.next(self.test)
 
@@ -58,18 +49,21 @@ class TestFlow(FlowSpec):
     """
     trainer = Trainer()
 
-    if self.test == "offline":
+    # Load trained system
+    system = FashionClassifierSystem.load_from_checkpoint(self.checkpoint_path)
+
+    if self.test_type == "offline":
       dm = FashionDataModule()
-      trainer.test(self.system, dm, ckpt_path = self.checkpoint_path)
-      results = self.system.test_results
+      trainer.test(system, dm, ckpt_path = self.checkpoint_path)
+      results = system.test_results
       log_name = 'offline.json'
     else:
       # We pretend we have access to all the labels to compute these results
       # In reality, we do not have these hidden labels accessible.
       ds = ProductionDataset(join(DATA_DIR, 'production/dataset.pt'), return_hidden_labels = True)
       dl = DataLoader(ds, batch_size=10)
-      trainer.test(self.system, dataloaders = dl, ckpt_path = self.checkpoint_path)
-      results = self.system.test_results
+      trainer.test(system, dataloaders = dl, ckpt_path = self.checkpoint_path)
+      results = system.test_results
       log_name = 'production.json'
 
     # print results to command line

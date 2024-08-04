@@ -61,12 +61,6 @@ class TrainFlow(FlowSpec):
     else:
       transform = transforms.ToTensor()
 
-    # a data module wraps around training, dev, and test datasets
-    dm = FashionDataModule(transform=transform)
-
-    # a PyTorch Lightning system wraps around model logic
-    system = FashionClassifierSystem(config)
-
     # a callback to save best model weights
     checkpoint_callback = ModelCheckpoint(
       dirpath = config.save_dir,
@@ -83,9 +77,9 @@ class TrainFlow(FlowSpec):
 
     # when we save these objects to a `step`, they will be available
     # for use in the next step, through not steps after.
-    self.dm = dm
-    self.system = system
     self.trainer = trainer
+    self.transform = transform
+    self.config = config
 
     self.next(self.train_model)
 
@@ -93,8 +87,14 @@ class TrainFlow(FlowSpec):
   def train_model(self):
     """Calls `fit` on the trainer."""
 
+    # a data module wraps around training, dev, and test datasets
+    dm = FashionDataModule(transform=self.transform)
+
+    # a PyTorch Lightning system wraps around model logic
+    system = FashionClassifierSystem(self.config)
+
     # Call `fit` on the trainer with `system` and `dm`.
-    self.trainer.fit(self.system, self.dm)
+    self.trainer.fit(system, dm)
 
     self.next(self.offline_test)
 
@@ -102,8 +102,11 @@ class TrainFlow(FlowSpec):
   def offline_test(self):
     r"""Calls (offline) `test` on the trainer. Saves results to a log file."""
 
+    dm = FashionDataModule(transform=self.transform)
+    system = FashionClassifierSystem(self.config)
+
     # Load the best checkpoint and compute results using `self.trainer.test`
-    self.trainer.test(self.system, self.dm, ckpt_path = 'best')
+    self.trainer.test(system, dm, ckpt_path = 'best')
     results = self.system.test_results
 
     # print results to command line
