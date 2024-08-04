@@ -3,6 +3,7 @@
 import os
 import torch
 import random
+import logging
 import numpy as np
 from os.path import join
 from pprint import pprint
@@ -15,6 +16,8 @@ from pytorch_lightning.loggers import TensorBoardLogger
 from monitor.systems import ReviewDataModule, SentimentClassifierSystem
 from monitor.utils import load_config, to_json
 from monitor.paths import LOG_DIR, CONFIG_DIR
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class TrainClassifier(FlowSpec):
@@ -48,13 +51,7 @@ class TrainClassifier(FlowSpec):
     """
     # configuration files contain all hyperparameters
     config = load_config(self.config_path)
-
-    # a data module wraps around training, dev, and test datasets
-    dm = ReviewDataModule(config)
-
-    # a PyTorch Lightning system wraps around model logic
-    system = SentimentClassifierSystem(config)
-
+  
     # a callback to save best model weights
     checkpoint_callback = ModelCheckpoint(
       dirpath = config.save_dir,
@@ -71,19 +68,24 @@ class TrainClassifier(FlowSpec):
 
     # when we save these objects to a `step`, they will be available
     # for use in the next step, through not steps after.
-    self.dm = dm
-    self.system = system
     self.trainer = trainer
-
+    self.config = config
+  
     self.next(self.train_model)
 
   @step
   def train_model(self):
     """Calls `fit` on the trainer."""
 
+    # a data module wraps around training, dev, and test datasets
+    dm = ReviewDataModule(self.config)
+
+    # a PyTorch Lightning system wraps around model logic
+    system = SentimentClassifierSystem(self.config)
+
     # Call `fit` on the trainer with `system` and `dm`.
     # Our solution is one line.
-    self.trainer.fit(self.system, self.dm)
+    self.trainer.fit(system, dm)
 
     self.next(self.offline_test)
 
@@ -91,9 +93,12 @@ class TrainClassifier(FlowSpec):
   def offline_test(self):
     r"""Calls (offline) `test` on the trainer. Saves results to a log file."""
 
+    dm = ReviewDataModule(self.config)
+    system = SentimentClassifierSystem(self.config)
+
     # Load the best checkpoint and compute results using `self.trainer.test`
-    self.trainer.test(self.system, self.dm, ckpt_path = 'best')
-    results = self.system.test_results
+    self.trainer.test(system, dm, ckpt_path = 'best')
+    results = system.test_results
 
     # print results to command line
     pprint(results)

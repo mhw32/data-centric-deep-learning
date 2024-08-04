@@ -4,7 +4,6 @@ import random
 import numpy as np
 import pandas as pd
 from os.path import join
-from pathlib import Path
 from pprint import pprint
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -18,7 +17,7 @@ from cleanlab.filter import find_label_issues
 
 from conflearn.system import ReviewDataModule, SentimentClassifierSystem
 from conflearn.utils import load_config, to_json
-from conflearn.paths import DATA_DIR, LOG_DIR
+from conflearn.paths import DATA_DIR, LOG_DIR, CONFIG_DIR
 
 
 class TrainIdentifyReview(FlowSpec):
@@ -49,13 +48,7 @@ class TrainIdentifyReview(FlowSpec):
     and lightning trainer instance.
     """
     # configuration files contain all hyperparameters
-    config = load_config(self.config_path)
-
-    # a data module wraps around training, dev, and test datasets
-    dm = ReviewDataModule(config)
-
-    # a PyTorch Lightning system wraps around model logic
-    system = SentimentClassifierSystem(config)
+    config = load_config(join(CONFIG_DIR, self.config_path))
 
     # a callback to save best model weights
     checkpoint_callback = ModelCheckpoint(
@@ -73,8 +66,6 @@ class TrainIdentifyReview(FlowSpec):
 
     # when we save these objects to a `step`, they will be available
     # for use in the next step, through not steps after.
-    self.dm = dm
-    self.system = system
     self.trainer = trainer
     self.config = config
 
@@ -87,13 +78,19 @@ class TrainIdentifyReview(FlowSpec):
     We first train and (offline) evaluate the model to see what 
     performance would be without any improvements to data quality.
     """
+    # a data module wraps around training, dev, and test datasets
+    dm = ReviewDataModule(self.config)
+
+    # a PyTorch Lightning system wraps around model logic
+    system = SentimentClassifierSystem(self.config)
+
     # Call `fit` on the trainer with `system` and `dm`.
     # Our solution is one line.
-    self.trainer.fit(self.system, self.dm)
-    self.trainer.test(self.system, self.dm, ckpt_path = 'best')
+    self.trainer.fit(system, dm)
+    self.trainer.test(system, dm, ckpt_path = 'best')
 
     # results are saved into the system
-    results = self.system.test_results
+    results = system.test_results
 
     # print results to command line
     pprint(results)
@@ -110,16 +107,17 @@ class TrainIdentifyReview(FlowSpec):
     out-of-sample probabilities for every element. Each element
     will appear in a single cross validation split exactly once. 
     """
+    dm = ReviewDataModule(self.config)
     # combine training and dev datasets
     X = np.concatenate([
-      np.asarray(self.dm.train_dataset.embedding),
-      np.asarray(self.dm.dev_dataset.embedding),
-      np.asarray(self.dm.test_dataset.embedding),
+      np.asarray(dm.train_dataset.embedding),
+      np.asarray(dm.dev_dataset.embedding),
+      np.asarray(dm.test_dataset.embedding),
     ])
     y = np.concatenate([
-      np.asarray(self.dm.train_dataset.data.label),
-      np.asarray(self.dm.dev_dataset.data.label),
-      np.asarray(self.dm.test_dataset.data.label),
+      np.asarray(dm.train_dataset.data.label),
+      np.asarray(dm.dev_dataset.data.label),
+      np.asarray(dm.test_dataset.data.label),
     ])
 
     probs = np.zeros(len(X))  # we will fill this in
@@ -170,9 +168,9 @@ class TrainIdentifyReview(FlowSpec):
 
     # create a single dataframe with all input features
     all_df = pd.concat([
-      self.dm.train_dataset.data,
-      self.dm.dev_dataset.data,
-      self.dm.test_dataset.data,
+      dm.train_dataset.data,
+      dm.dev_dataset.data,
+      dm.test_dataset.data,
     ])
     all_df = all_df.reset_index(drop=True)
     # add out-of-sample probabilities to the dataframe

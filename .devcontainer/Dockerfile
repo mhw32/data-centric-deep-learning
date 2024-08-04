@@ -1,5 +1,5 @@
 # Use Python 3.10 base image
-FROM mcr.microsoft.com/devcontainers/python:3.8
+FROM mcr.microsoft.com/devcontainers/python:3.10
 
 # Set environment variables
 ENV PIP_DISABLE_PIP_VERSION_CHECK=on
