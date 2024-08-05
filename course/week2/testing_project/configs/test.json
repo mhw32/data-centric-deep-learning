@@ -1,4 +1,4 @@
 {
   "data": "mnist",
-  "model": "linear.ckpt"
+  "model": "mlp.ckpt"
 }
