@@ -71,6 +71,22 @@ class OptimizeRagParams(FlowSpec):
     # over 100,000s but this should illustruate the point.
     # TODO
     # ===========================
+
+    hparams: List[DotMap] = []
+    embedding_models = ["all-MiniLM-L6-v2", "thenlper/gte-small"]
+    text_search_weights = [0, 0.5]
+    hyde_embeddings_options = [False, True]
+
+    for embedding in embedding_models:
+        for weight in text_search_weights:
+            for hyde in hyde_embeddings_options:
+                hparam = DotMap({
+                    "embedding": embedding,
+                    "text_search_weight": weight,
+                    "hyde_embeddings": hyde,
+                })
+                hparams.append(hparam)
+
     assert len(hparams) > 0, "Remember to complete the code in `get_search_space`"
     assert len(hparams) == 8, "You should have 8 configurations" 
     self.hparams = hparams
@@ -108,6 +124,36 @@ class OptimizeRagParams(FlowSpec):
       #      +1 to `hits` if it does. +0 to `hits` if not.
       # TODO
       # ===========================
+      hits = 0
+      for i in tqdm(range(len(questions))):
+          question = questions.question.iloc[i]
+          gt_id = questions.doc_id.iloc[i]
+          
+          # Compute embedding
+          if self.input.hyde_embeddings:
+              hypo_answer = questions.hypo_answers.iloc[i]
+              embedding = embedding_model.encode(hypo_answer).tolist()
+          else:
+              embedding = embedding_model.encode(question).tolist()
+          
+          # Retrieve documents
+          results = retrieve_documents(
+              self.starpoint_api_key,
+              collection_name=collection_name,
+              query=question,
+              query_embedding=embedding,
+              top_k=3,
+              text_search_weight=self.input.text_search_weight,
+          )
+          
+          # Check if the correct document is in the top 3
+          retrieved_ids = [result['metadata']['doc_id'] for result in results]
+          if gt_id in retrieved_ids:
+              hits += 1
+
+      hit_rate = hits / float(len(questions))
+      self.hit_rate = hit_rate  # save to class
+      self.hparam = self.input
 
     hit_rate = hits / float(len(questions))
     self.hit_rate = hit_rate  # save to class
